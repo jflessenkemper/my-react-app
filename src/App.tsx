@@ -111,7 +111,10 @@ export default function App() {
             </svg>
           </div>
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-100">{showRegisterForm ? 'Create Account' : 'Welcome'}</h1>
+            {/* Changed "Welcome" to "Jump In" and added animation classes */}
+            <h1 className={`text-3xl font-bold ${showRegisterForm ? 'text-gray-100' : 'bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent animated-text-gradient'}`}>
+              {showRegisterForm ? 'Create Account' : 'Jump In'}
+            </h1>
             <p className="text-gray-400 mt-2">{showRegisterForm ? 'Sign up to get started.' : 'Sign in to continue to your account.'}</p>
           </div>
 
