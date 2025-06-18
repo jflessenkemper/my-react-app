@@ -202,7 +202,7 @@ export default function App() {
               </div>
               <div className="text-center">
                 <h1 key={showRegisterForm ? "register-title" : "login-title"}
-                    className={`text-3xl font-bold text-fade-in-out ${showRegisterForm ? 'text-gray-100' : 'bg-gradient-to-r from-cyan-400 via-white to-green-400 bg-clip-text text-transparent animated-text-gradient'}`}>
+                    className={`text-3xl font-bold text-fade-in-out ${showRegisterForm ? 'text-gray-100' : ''}`}>
                   {showRegisterForm ? 'Create Account' : 'Jump In'}
                 </h1>
                 <p key={showRegisterForm ? "register-subtitle" : "login-subtitle"}
