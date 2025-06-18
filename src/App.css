@@ -1,16 +1,26 @@
 @import "tailwindcss";
 
-/* Keyframes for the gradient animation (for "Jump In" text) */
-@keyframes text-gradient-animation {
-  0% { background-position: 0% 50%; } /* Start from left */
-  50% { background-position: 100% 50%; } /* Move to right */
-  100% { background-position: 0% 50%; } /* Return to left */
+@keyframes animatedTextGradient {
+  to {
+    background-position: 200% center;
+  }
 }
 
 /* Class for the animated gradient text */
 .animated-text-gradient {
-  background-size: 100% 100%; /* Important: 200% width allows the gradient to fully move across */
-  animation: text-gradient-animation 4s ease infinite; /* Adjust duration as needed */
+ background: radial-gradient(
+    circle at 100%,
+    #b6ffb6,
+    #90ee90 50%,
+    #9effff 75%,
+    #00ffff 75%
+  );
+  font-weight: 600;
+  background-size: 200% auto;
+  color: #000;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: animatedTextGradient 3s linear infinite;
 }
 
 /* Keyframes for text fade-in/out */
