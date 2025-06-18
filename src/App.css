@@ -1,31 +1,6 @@
 @import "tailwindcss";
 /* Add to your existing App.css */
 
-/* New Keyframes for the animatedTextGradient (for "Jump In" text) */
-@keyframes animatedTextGradient {
-  to {
-    background-position: 200% center; /* Moves the background gradient from left to right */
-  }
-}
-
-/* New Class for the animated radial gradient text */
-.animated-text-gradient {
-  background: radial-gradient(
-    circle at 100%, /* Start radial gradient from the right edge */
-    #b6ffb6, /* Light green */
-    #90ee90 50%, /* Lighter green */
-    #9effff 75%, /* Light aqua */
-    #00ffff 75% /* Bright aqua */
-  );
-  font-weight: 600; /* Often makes gradient text stand out */
-  background-size: 200% auto; /* Ensures the gradient is wider than the text, allowing it to move */
-  color: #000; /* This color is masked by background-clip: text; */
-  background-clip: text;
-  -webkit-background-clip: text; /* For Webkit browsers */
-  -webkit-text-fill-color: transparent; /* Makes the text transparent, showing the background */
-  animation: animatedTextGradient 3s linear infinite; /* Apply the new animation */
-}
-
 /* Keyframes for text fade-in/out */
 @keyframes fade-in-slide-up {
   0% {
