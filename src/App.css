@@ -45,12 +45,11 @@
 /* Glassmorphism styles for the form container - removed transition-all */
 .glassmorphism {
   background: rgba(20, 20, 20, 0.5); /* Semi-transparent dark background */
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* Moved from index.css as it's part of the glass effect */
   backdrop-filter: blur(12px); /* Blur effect */
   -webkit-backdrop-filter: blur(12px); /* For Safari compatibility */
   border-radius: 10px; /* Rounded corners */
   border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
-  /* NO transition-all here to remove form height animation */
+  /* No box-shadow here to avoid conflict with glassmorphism in index.css if it exists */
 }
 
 /* Animated button style */
