@@ -1,7 +1,74 @@
 @import "tailwindcss";
 
+/* Keyframes for the gradient animation (for "Jump In" text) */
+@keyframes text-gradient-animation {
+  0% { background-position: 0% 50%; } /* Start from left */
+  50% { background-position: 100% 50%; } /* Move to right */
+  100% { background-position: 0% 50%; } /* Return to left */
+}
+
+/* Class for the animated gradient text */
+.animated-text-gradient {
+  background-size: 200% 100%; /* Important: 200% width allows the gradient to fully move across */
+  animation: text-gradient-animation 4s ease infinite; /* Adjust duration as needed */
+}
+
+/* Keyframes for text fade-in/out */
+/* This animation applies to any text that changes and has the .text-fade-in-out class */
+@keyframes fade-in-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Class to apply the text fade animation */
+.text-fade-in-out {
+  /* We use a key prop in React to re-trigger this animation */
+  animation: fade-in-slide-up 0.4s ease-out forwards;
+}
+
+/* Glassmorphism styles for the form container */
+.glassmorphism {
+  background: rgba(20, 20, 20, 0.5); /* Semi-transparent dark background */
+  backdrop-filter: blur(12px); /* Blur effect */
+  -webkit-backdrop-filter: blur(12px); /* For Safari compatibility */
+  border-radius: 10px; /* Rounded corners */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
+  /* No box-shadow here to avoid conflict with glassmorphism in index.css if it exists */
+}
+
+/* Animated button style */
+.animated-button {
+  background: linear-gradient(90deg, #00ffff, #90ee90, #00ffff); /* Aqua, Green, Aqua */
+  background-size: 200% 200%; /* Allows for gradient movement */
+  animation: button-hover 5s ease infinite; /* Animation for the gradient background */
+  color: #000; /* Text color for the button */
+}
+
+.animated-button:hover {
+  animation-play-state: paused; /* Pause animation on hover */
+}
+
+@keyframes button-hover {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* Ensure these base styles are correctly applied, especially if they are also in index.css */
 body {
-  background-color: #2C2F33;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background-color: #2C2F33; This might be overridden by index.css gradient */
 }
 
 input:focus {

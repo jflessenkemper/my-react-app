@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import './App.css'; // Assuming this contains your glassmorphism and other styles
+import './App.css'; // This now contains all your custom styles and animations
 
 export default function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); // New state for registration success
+  const [successMessage, setSuccessMessage] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInUserEmail, setLoggedInUserEmail] = useState<string | null>(null);
-  const [showRegisterForm, setShowRegisterForm] = useState(false); // New state to toggle views
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
 
   // Clears all form-related states
   const clearFormStates = () => {
@@ -20,7 +20,7 @@ export default function App() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearFormStates(); // Clear messages before new attempt
+    clearFormStates();
 
     try {
       const response = await fetch('/api/login', {
@@ -35,7 +35,7 @@ export default function App() {
         console.log('Login successful!', data.user);
         setIsLoggedIn(true);
         setLoggedInUserEmail(data.user.email);
-        clearFormStates(); // Clear form after successful login
+        clearFormStates();
       } else {
         setError(data.message || 'Invalid credentials. Please try again.');
         setIsLoggedIn(false);
@@ -49,7 +49,7 @@ export default function App() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearFormStates(); // Clear messages before new attempt
+    clearFormStates();
 
     try {
       const response = await fetch('/api/register', {
@@ -62,7 +62,7 @@ export default function App() {
 
       if (response.ok) {
         setSuccessMessage(data.message || 'Registration successful! You can now log in.');
-        clearFormStates(); // Clear form after successful registration
+        clearFormStates();
         setShowRegisterForm(false); // Go back to login form after successful registration
       } else {
         setError(data.message || 'Registration failed. Please try again.');
@@ -73,10 +73,9 @@ export default function App() {
     }
   };
 
-  // If the user is logged in, display a welcome message instead of the form
   if (isLoggedIn) {
     return (
-      <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8"> {/* Adjusted for full screen on mobile */}
+      <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8">
         <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism text-center text-gray-100">
           <h1 className="text-3xl font-bold">Welcome, {loggedInUserEmail}!</h1>
           <p className="text-gray-400">You are successfully logged in.</p>
@@ -84,7 +83,7 @@ export default function App() {
             onClick={() => {
               setIsLoggedIn(false);
               setLoggedInUserEmail(null);
-              clearFormStates(); // Reset all form states
+              clearFormStates();
             }}
             className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-gray-900 animated-button transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900"
           >
@@ -95,15 +94,11 @@ export default function App() {
     );
   }
 
-  // Render Login or Register Form
   return (
     <>
-      {/* Main container: Centered flexbox, takes full viewport height and width on all devices */}
-      {/* On small screens, padding is `p-4`, increasing to `sm:p-8` for larger screens. */}
-      {/* `h-screen` ensures full viewport height, `overflow-hidden` prevents scrolling of the entire page. */}
       <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8 overflow-hidden">
-        {/* Form container: `w-full` on mobile, `max-w-md` (limited width) on medium and larger screens */}
-        {/* Added transition-all for smooth size changes */}
+        {/* Form container: Adds transition for smooth size changes. */}
+        {/* The height transition itself is mainly handled by the max-h of the conditionally rendered div. */}
         <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism transition-all duration-500 ease-in-out">
           {/* Lock Icon */}
           <div className="flex justify-center">
@@ -112,11 +107,16 @@ export default function App() {
             </svg>
           </div>
           <div className="text-center">
-            {/* Conditional classes for text animation */}
-            <h1 className={`text-3xl font-bold transition-opacity duration-300 ease-in-out animated-text-fade ${showRegisterForm ? 'text-gray-100' : 'bg-gradient-to-r from-cyan-400 via-white to-green-400 bg-clip-text text-transparent animated-text-gradient'}`}>
+            {/* Added key prop to force re-render and re-trigger fade animation */}
+            {/* Class name changed to text-fade-in-out */}
+            <h1 key={showRegisterForm ? "register-title" : "login-title"}
+                className={`text-3xl font-bold text-fade-in-out ${showRegisterForm ? 'text-gray-100' : 'bg-gradient-to-r from-cyan-400 via-white to-green-400 bg-clip-text text-transparent animated-text-gradient'}`}>
               {showRegisterForm ? 'Create Account' : 'Jump In'}
             </h1>
-            <p className={`text-gray-400 mt-2 transition-opacity duration-300 ease-in-out animated-text-fade`}>
+            {/* Added key prop to force re-render and re-trigger fade animation */}
+            {/* Class name changed to text-fade-in-out */}
+            <p key={showRegisterForm ? "register-subtitle" : "login-subtitle"}
+               className={`text-gray-400 mt-2 text-fade-in-out`}>
               {showRegisterForm ? 'Sign up to get started.' : 'Sign in to continue to your account.'}
             </p>
           </div>
@@ -168,8 +168,8 @@ export default function App() {
             </div>
 
             {/* Remember Me / Forgot Password (Login Only) */}
-            {/* Added transition-all to this container for smooth hiding/showing */}
-            <div className={`transition-all duration-500 ease-in-out ${!showRegisterForm ? 'opacity-100 h-auto' : 'opacity-0 h-0 overflow-hidden'}`}>
+            {/* Increased max-h to ensure smooth transition for height changes */}
+            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${!showRegisterForm ? 'opacity-100 max-h-[150px]' : 'opacity-0 max-h-0'}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 text-gray-500 focus:ring-gray-400 border-gray-600 rounded bg-gray-900/50" />

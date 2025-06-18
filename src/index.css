@@ -1,4 +1,4 @@
-@import './App.css';
+@import './App.css'; /* Keep this import */
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -7,7 +7,8 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #2C2F33;
+  /* The main background color will be handled by the gradient below */
+  /* background-color: #2C2F33; */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -31,7 +32,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #2C2F33;
+  /* Ensure the background gradient is applied here only */
+  background: linear-gradient(-45deg, #0a0a0a, #1a1a1a, #2a2a2a, #1c1c1c);
+  background-size: 400% 400%;
+  animation: gradient-bg 15s ease infinite;
+  font-family: 'Inter', sans-serif; /* Keep Inter font as requested previously */
 }
 
 #root {
@@ -47,7 +52,8 @@ h1 {
   line-height: 1.1;
 }
 
-button {
+/* Remove button styles here if they are also defined in App.css */
+/* button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -64,89 +70,21 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
+} */
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
 
-    @keyframes gradient-bg {
-      0% {
-        background-position: 0% 50%;
-      }
-      50% {
-        background-position: 100% 50%;
-      }
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-
-    body {
-      background: linear-gradient(-45deg, #0a0a0a, #1a1a1a, #2a2a2a, #1c1c1c);
-      background-size: 400% 400%;
-      animation: gradient-bg 15s ease infinite;
-      font-family: 'Inter', sans-serif;
-    }
-
-    /* Keyframes for the gradient animation */
-@keyframes text-gradient-animation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Class for the animated gradient text */
-.animated-text-gradient {
-  background-size: 200% 200%;
-  animation: text-gradient-animation 4s ease infinite; /* Adjust duration as needed */
-}
-
-/* Keyframes for text fade-in/out */
-@keyframes fade-in-slide-up {
+/* Keep the body gradient animation keyframes here */
+@keyframes gradient-bg {
   0% {
-    opacity: 0;
-    transform: translateY(10px);
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
   }
   100% {
-    opacity: 1;
-    transform: translateY(0);
+    background-position: 0% 50%;
   }
 }
 
-/* Class for text fade animation */
-.animated-text-fade {
-  animation: fade-in-slide-up 0.4s ease-out forwards; /* Adjust duration as needed */
-}
-
-.glassmorphism {
-  background: rgba(20, 20, 20, 0.5);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.animated-button {
-  background: linear-gradient(90deg, #00ffff, #90ee90, #00ffff);
-  background-size: 200% 200%;
-  animation: button-hover 5s ease infinite;
-}
-
-.animated-button:hover {
-  animation-play-state: paused;
-}
-
-@keyframes button-hover {
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
+/* Remove duplicate text-gradient-animation and fade-in-slide-up from here */
+/* Remove duplicate glassmorphism, animated-button, button-hover from here */
