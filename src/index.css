@@ -98,25 +98,55 @@ button:focus-visible {
       font-family: 'Inter', sans-serif;
     }
 
-    .glassmorphism {
-      background: rgba(20, 20, 20, 0.5);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .animated-button {
-        background: linear-gradient(90deg, #00ffff, #90ee90, #00ffff);
-        background-size: 200% 200%;
-        animation: button-hover 5s ease infinite;
-    }
+    /* Keyframes for the gradient animation */
+@keyframes text-gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-    .animated-button:hover {
-        animation-play-state: paused;
-    }
-    
-    @keyframes button-hover {
-        0%{background-position:0% 50%}
-        50%{background-position:100% 50%}
-        100%{background-position:0% 50%}
-    }
+/* Class for the animated gradient text */
+.animated-text-gradient {
+  background-size: 200% 200%;
+  animation: text-gradient-animation 4s ease infinite; /* Adjust duration as needed */
+}
+
+/* Keyframes for text fade-in/out */
+@keyframes fade-in-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Class for text fade animation */
+.animated-text-fade {
+  animation: fade-in-slide-up 0.4s ease-out forwards; /* Adjust duration as needed */
+}
+
+.glassmorphism {
+  background: rgba(20, 20, 20, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.animated-button {
+  background: linear-gradient(90deg, #00ffff, #90ee90, #00ffff);
+  background-size: 200% 200%;
+  animation: button-hover 5s ease infinite;
+}
+
+.animated-button:hover {
+  animation-play-state: paused;
+}
+
+@keyframes button-hover {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}

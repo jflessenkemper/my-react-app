@@ -103,7 +103,8 @@ export default function App() {
       {/* `h-screen` ensures full viewport height, `overflow-hidden` prevents scrolling of the entire page. */}
       <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8 overflow-hidden">
         {/* Form container: `w-full` on mobile, `max-w-md` (limited width) on medium and larger screens */}
-        <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism">
+        {/* Added transition-all for smooth size changes */}
+        <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism transition-all duration-500 ease-in-out">
           {/* Lock Icon */}
           <div className="flex justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
@@ -111,12 +112,13 @@ export default function App() {
             </svg>
           </div>
           <div className="text-center">
-            {/* Changed "Welcome" to "Jump In" and added animation classes */}
-            {/* Added 'via-white' to the gradient for aqua-white-green effect */}
-            <h1 className={`text-3xl font-bold ${showRegisterForm ? 'text-gray-100' : 'bg-gradient-to-r from-cyan-400 via-white to-green-400 bg-clip-text text-transparent animated-text-gradient'}`}>
+            {/* Conditional classes for text animation */}
+            <h1 className={`text-3xl font-bold transition-opacity duration-300 ease-in-out animated-text-fade ${showRegisterForm ? 'text-gray-100' : 'bg-gradient-to-r from-cyan-400 via-white to-green-400 bg-clip-text text-transparent animated-text-gradient'}`}>
               {showRegisterForm ? 'Create Account' : 'Jump In'}
             </h1>
-            <p className="text-gray-400 mt-2">{showRegisterForm ? 'Sign up to get started.' : 'Sign in to continue to your account.'}</p>
+            <p className={`text-gray-400 mt-2 transition-opacity duration-300 ease-in-out animated-text-fade`}>
+              {showRegisterForm ? 'Sign up to get started.' : 'Sign in to continue to your account.'}
+            </p>
           </div>
 
           <form className="space-y-6" onSubmit={showRegisterForm ? handleRegister : handleLogin}>
@@ -166,7 +168,8 @@ export default function App() {
             </div>
 
             {/* Remember Me / Forgot Password (Login Only) */}
-            {!showRegisterForm && (
+            {/* Added transition-all to this container for smooth hiding/showing */}
+            <div className={`transition-all duration-500 ease-in-out ${!showRegisterForm ? 'opacity-100 h-auto' : 'opacity-0 h-0 overflow-hidden'}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 text-gray-500 focus:ring-gray-400 border-gray-600 rounded bg-gray-900/50" />
@@ -180,7 +183,7 @@ export default function App() {
                   </a>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Submit Button */}
             <div>
