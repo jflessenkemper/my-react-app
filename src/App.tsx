@@ -112,7 +112,8 @@ export default function App() {
           </div>
           <div className="text-center">
             {/* Changed "Welcome" to "Jump In" and added animation classes */}
-            <h1 className={`text-3xl font-bold ${showRegisterForm ? 'text-gray-100' : 'bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent animated-text-gradient'}`}>
+            {/* Added 'via-white' to the gradient for aqua-white-green effect */}
+            <h1 className={`text-3xl font-bold ${showRegisterForm ? 'text-gray-100' : 'bg-gradient-to-r from-cyan-400 via-white to-green-400 bg-clip-text text-transparent animated-text-gradient'}`}>
               {showRegisterForm ? 'Create Account' : 'Jump In'}
             </h1>
             <p className="text-gray-400 mt-2">{showRegisterForm ? 'Sign up to get started.' : 'Sign in to continue to your account.'}</p>
