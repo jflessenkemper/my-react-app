@@ -52,27 +52,6 @@ h1 {
   line-height: 1.1;
 }
 
-/* Remove button styles here if they are also defined in App.css */
-/* button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-} */
-
-
 /* Keep the body gradient animation keyframes here */
 @keyframes gradient-bg {
   0% {
@@ -85,6 +64,3 @@ button:focus-visible {
     background-position: 0% 50%;
   }
 }
-
-/* Remove duplicate text-gradient-animation and fade-in-slide-up from here */
-/* Remove duplicate glassmorphism, animated-button, button-hover from here */

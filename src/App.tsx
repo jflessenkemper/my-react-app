@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react'; // Import useEffect and useRef
 import './App.css'; // This now contains all your custom styles and animations
 
 export default function App() {
@@ -10,7 +10,75 @@ export default function App() {
   const [loggedInUserEmail, setLoggedInUserEmail] = useState<string | null>(null);
   const [showRegisterForm, setShowRegisterForm] = useState(false);
 
-  // Clears all form-related states
+  // useRef to hold the timeout ID for auto-logout
+  const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Function to clear session data from local storage and state
+  const clearSession = () => {
+    localStorage.removeItem('sessionId');
+    localStorage.removeItem('sessionExpiresAt');
+    localStorage.removeItem('loggedInUserEmail'); // Clear stored user email as well
+    setIsLoggedIn(false);
+    setLoggedInUserEmail(null);
+    clearFormStates(); // Also clear form fields and messages
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current); // Clear any pending auto-logout
+      logoutTimerRef.current = null;
+    }
+  };
+
+  // Function to set session data and start auto-logout timer
+  const setSession = (sessionId: string, expiresAt: string, userEmail: string) => {
+    const expirationDate = new Date(expiresAt);
+    const expirationMs = expirationDate.getTime() - Date.now();
+
+    localStorage.setItem('sessionId', sessionId);
+    localStorage.setItem('sessionExpiresAt', expiresAt);
+    localStorage.setItem('loggedInUserEmail', userEmail); // Store email for persistence
+    setIsLoggedIn(true);
+    setLoggedInUserEmail(userEmail);
+
+    if (logoutTimerRef.current) {
+      clearTimeout(logoutTimerRef.current);
+    }
+    // Only set a timeout if the session is not already expired
+    if (expirationMs > 0) {
+      logoutTimerRef.current = setTimeout(() => {
+        console.log('Session expired, logging out automatically.');
+        handleLogout(sessionId); // Call logout function to clear server session
+      }, expirationMs);
+    } else {
+      console.log('Session already expired when trying to set, clearing immediately.');
+      clearSession(); // Clear if it's already past expiration
+    }
+  };
+
+  // Effect to check for existing session on component mount
+  useEffect(() => {
+    const storedSessionId = localStorage.getItem('sessionId');
+    const storedExpiresAt = localStorage.getItem('sessionExpiresAt');
+    const storedUserEmail = localStorage.getItem('loggedInUserEmail');
+
+    if (storedSessionId && storedExpiresAt && storedUserEmail) {
+      const expirationDate = new Date(storedExpiresAt);
+      if (expirationDate > new Date()) {
+        // Session is still valid, restore it
+        setSession(storedSessionId, storedExpiresAt, storedUserEmail);
+      } else {
+        // Session expired, clear it
+        console.log('Stored session has expired, clearing it.');
+        clearSession();
+      }
+    }
+    // Cleanup function for useEffect to clear the timeout if the component unmounts
+    return () => {
+      if (logoutTimerRef.current) {
+        clearTimeout(logoutTimerRef.current);
+      }
+    };
+  }, []); // Run only once on mount
+
+  // Clears all form-related states (email, password, errors, messages)
   const clearFormStates = () => {
     setEmail('');
     setPassword('');
@@ -20,7 +88,7 @@ export default function App() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearFormStates();
+    clearFormStates(); // Clear messages before new attempt
 
     try {
       const response = await fetch('/api/login', {
@@ -33,23 +101,22 @@ export default function App() {
 
       if (response.ok) {
         console.log('Login successful!', data.user);
-        setIsLoggedIn(true);
-        setLoggedInUserEmail(data.user.email);
-        clearFormStates();
+        setSuccessMessage('Login successful!'); // Give visual feedback
+        setSession(data.sessionId, data.expiresAt, data.user.email); // Set session and timer
       } else {
         setError(data.message || 'Invalid credentials. Please try again.');
-        setIsLoggedIn(false);
+        setIsLoggedIn(false); // Ensure login status is false on error
       }
     } catch (err) {
       console.error('Network error during login:', err);
       setError('A network error occurred. Please try again.');
-      setIsLoggedIn(false);
+      setIsLoggedIn(false); // Ensure login status is false on network error
     }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearFormStates();
+    clearFormStates(); // Clear messages before new attempt
 
     try {
       const response = await fetch('/api/register', {
@@ -62,7 +129,7 @@ export default function App() {
 
       if (response.ok) {
         setSuccessMessage(data.message || 'Registration successful! You can now log in.');
-        clearFormStates();
+        clearFormStates(); // Clear form after successful registration
         setShowRegisterForm(false); // Go back to login form after successful registration
       } else {
         setError(data.message || 'Registration failed. Please try again.');
@@ -73,6 +140,25 @@ export default function App() {
     }
   };
 
+  const handleLogout = async (sessionIdToClear?: string) => {
+    const currentSessionId = sessionIdToClear || localStorage.getItem('sessionId');
+    if (currentSessionId) {
+      try {
+        await fetch('/api/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId: currentSessionId }),
+        });
+        console.log('Server session cleared.');
+      } catch (error) {
+        console.error('Failed to clear server session:', error);
+      }
+    }
+    clearSession(); // Always clear client-side session regardless of server outcome
+  };
+
+
+  // Render logged-in state or forms
   if (isLoggedIn) {
     return (
       <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8">
@@ -80,11 +166,7 @@ export default function App() {
           <h1 className="text-3xl font-bold">Welcome, {loggedInUserEmail}!</h1>
           <p className="text-gray-400">You are successfully logged in.</p>
           <button
-            onClick={() => {
-              setIsLoggedIn(false);
-              setLoggedInUserEmail(null);
-              clearFormStates();
-            }}
+            onClick={() => handleLogout()} // Call handleLogout directly
             className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-gray-900 animated-button transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900"
           >
             Logout
@@ -97,9 +179,8 @@ export default function App() {
   return (
     <>
       <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8 overflow-hidden">
-        {/* Form container: Adds transition for smooth size changes. */}
-        {/* The height transition itself is mainly handled by the max-h of the conditionally rendered div. */}
-        <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism transition-all duration-500 ease-in-out">
+        {/* Form container: Removed transition-all for form height animation */}
+        <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism">
           {/* Lock Icon */}
           <div className="flex justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
@@ -167,9 +248,9 @@ export default function App() {
               />
             </div>
 
-            {/* Remember Me / Forgot Password (Login Only) */}
-            {/* Increased max-h to ensure smooth transition for height changes */}
-            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${!showRegisterForm ? 'opacity-100 max-h-[150px]' : 'opacity-0 max-h-0'}`}>
+            {/* Remember Me / Forgot Password (Login Only) - No transition on height */}
+            {/* The presence/absence of this div causes an instant height change now */}
+            <div className={`${!showRegisterForm ? 'opacity-100 h-auto' : 'opacity-0 h-0 overflow-hidden'}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 text-gray-500 focus:ring-gray-400 border-gray-600 rounded bg-gray-900/50" />

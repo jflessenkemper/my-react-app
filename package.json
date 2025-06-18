@@ -12,6 +12,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
     "@tailwindcss/vite": "^4.1.10",
+    "uuid": "^9.0.0",
     "react": "^19.1.0",
     "bcryptjs": "^2.4.3",
     "react-dom": "^19.1.0"

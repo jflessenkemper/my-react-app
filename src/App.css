@@ -9,7 +9,7 @@
 
 /* Class for the animated gradient text */
 .animated-text-gradient {
-  background-size: 200% 100%; /* Important: 200% width allows the gradient to fully move across */
+  background-size: 100% 100%; /* Important: 200% width allows the gradient to fully move across */
   animation: text-gradient-animation 4s ease infinite; /* Adjust duration as needed */
 }
 
@@ -29,7 +29,7 @@
 /* Class to apply the text fade animation */
 .text-fade-in-out {
   /* We use a key prop in React to re-trigger this animation */
-  animation: fade-in-slide-up 0.4s ease-out forwards;
+  animation: fade-in-slide-up 0.8s ease-out forwards;
 }
 
 /* Glassmorphism styles for the form container */
