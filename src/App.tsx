@@ -76,7 +76,7 @@ export default function App() {
   // If the user is logged in, display a welcome message instead of the form
   if (isLoggedIn) {
     return (
-      <div className="flex items-center justify-center min-h-screen w-full">
+      <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8"> {/* Adjusted for full screen on mobile */}
         <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism text-center text-gray-100">
           <h1 className="text-3xl font-bold">Welcome, {loggedInUserEmail}!</h1>
           <p className="text-gray-400">You are successfully logged in.</p>
@@ -98,7 +98,11 @@ export default function App() {
   // Render Login or Register Form
   return (
     <>
-      <div className="flex items-center justify-center min-h-screen w-full">
+      {/* Main container: Centered flexbox, takes full viewport height and width on all devices */}
+      {/* On small screens, padding is `p-4`, increasing to `sm:p-8` for larger screens. */}
+      {/* `h-screen` ensures full viewport height, `overflow-hidden` prevents scrolling of the entire page. */}
+      <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8 overflow-hidden">
+        {/* Form container: `w-full` on mobile, `max-w-md` (limited width) on medium and larger screens */}
         <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism">
           {/* Lock Icon */}
           <div className="flex justify-center">
