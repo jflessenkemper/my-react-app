@@ -1,10 +1,5 @@
 @import "tailwindcss";
 /* Add to your existing App.css */
-/* Add to your existing App.css */
-
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
 
 /* New Keyframes for the animatedTextGradient (for "Jump In" text) */
 @keyframes animatedTextGradient {
