@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'; // Import useEffect and useRef
+import { useState, useEffect, useRef } from 'react';
 import './App.css'; // This now contains all your custom styles and animations
 
 export default function App() {
@@ -9,52 +9,47 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInUserEmail, setLoggedInUserEmail] = useState<string | null>(null);
   const [showRegisterForm, setShowRegisterForm] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // State for loading indicator
+  const [isLoading, setIsLoading] = useState(false);
 
-  // useRef to hold the timeout ID for auto-logout
   const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Function to clear session data from local storage and state
   const clearSession = () => {
     localStorage.removeItem('sessionId');
     localStorage.removeItem('sessionExpiresAt');
-    localStorage.removeItem('loggedInUserEmail'); // Clear stored user email as well
+    localStorage.removeItem('loggedInUserEmail');
     setIsLoggedIn(false);
     setLoggedInUserEmail(null);
-    clearFormStates(); // Also clear form fields and messages
+    clearFormStates();
     if (logoutTimerRef.current) {
-      clearTimeout(logoutTimerRef.current); // Clear any pending auto-logout
+      clearTimeout(logoutTimerRef.current);
       logoutTimerRef.current = null;
     }
   };
 
-  // Function to set session data and start auto-logout timer
   const setSession = (sessionId: string, expiresAt: string, userEmail: string) => {
     const expirationDate = new Date(expiresAt);
     const expirationMs = expirationDate.getTime() - Date.now();
 
     localStorage.setItem('sessionId', sessionId);
     localStorage.setItem('sessionExpiresAt', expiresAt);
-    localStorage.setItem('loggedInUserEmail', userEmail); // Store email for persistence
+    localStorage.setItem('loggedInUserEmail', userEmail);
     setIsLoggedIn(true);
     setLoggedInUserEmail(userEmail);
 
     if (logoutTimerRef.current) {
       clearTimeout(logoutTimerRef.current);
     }
-    // Only set a timeout if the session is not already expired and is positive
     if (expirationMs > 0) {
       logoutTimerRef.current = setTimeout(() => {
         console.log('Session expired, logging out automatically.');
-        handleLogout(sessionId); // Call logout function to clear server session
+        handleLogout(sessionId);
       }, expirationMs);
     } else {
       console.log('Stored session has expired when trying to set, clearing immediately.');
-      clearSession(); // Clear if it's already past expiration
+      clearSession();
     }
   };
 
-  // Effect to check for existing session on component mount
   useEffect(() => {
     const storedSessionId = localStorage.getItem('sessionId');
     const storedExpiresAt = localStorage.getItem('sessionExpiresAt');
@@ -63,23 +58,19 @@ export default function App() {
     if (storedSessionId && storedExpiresAt && storedUserEmail) {
       const expirationDate = new Date(storedExpiresAt);
       if (expirationDate > new Date()) {
-        // Session is still valid, restore it
         setSession(storedSessionId, storedExpiresAt, storedUserEmail);
       } else {
-        // Session expired, clear it
         console.log('Stored session has expired, clearing it.');
         clearSession();
       }
     }
-    // Cleanup function for useEffect to clear the timeout if the component unmounts
     return () => {
       if (logoutTimerRef.current) {
         clearTimeout(logoutTimerRef.current);
       }
     };
-  }, []); // Run only once on mount
+  }, []);
 
-  // Clears all form-related states (email, password, errors, messages)
   const clearFormStates = () => {
     setEmail('');
     setPassword('');
@@ -89,8 +80,8 @@ export default function App() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearFormStates(); // Clear messages before new attempt
-    setIsLoading(true); // Start loading
+    clearFormStates();
+    setIsLoading(true);
 
     try {
       const response = await fetch('/api/login', {
@@ -103,25 +94,25 @@ export default function App() {
 
       if (response.ok) {
         console.log('Login successful!', data.user);
-        setSuccessMessage('Login successful!'); // Give visual feedback
-        setSession(data.sessionId, data.expiresAt, data.user.email); // Set session and timer
+        setSuccessMessage('Login successful!');
+        setSession(data.sessionId, data.expiresAt, data.user.email);
       } else {
         setError(data.message || 'Invalid credentials. Please try again.');
-        setIsLoggedIn(false); // Ensure login status is false on error
+        setIsLoggedIn(false);
       }
     } catch (err) {
       console.error('Network error during login:', err);
       setError('A network error occurred. Please try again.');
-      setIsLoggedIn(false); // Ensure login status is false on network error
+      setIsLoggedIn(false);
     } finally {
-      setIsLoading(false); // End loading regardless of success or failure
+      setIsLoading(false);
     }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearFormStates(); // Clear messages before new attempt
-    setIsLoading(true); // Start loading
+    clearFormStates();
+    setIsLoading(true);
 
     try {
       const response = await fetch('/api/register', {
@@ -134,8 +125,8 @@ export default function App() {
 
       if (response.ok) {
         setSuccessMessage(data.message || 'Registration successful! You can now log in.');
-        clearFormStates(); // Clear form after successful registration
-        setShowRegisterForm(false); // Go back to login form after successful registration
+        clearFormStates();
+        setShowRegisterForm(false);
       } else {
         setError(data.message || 'Registration failed. Please try again.');
       }
@@ -143,7 +134,7 @@ export default function App() {
       console.error('Network error during registration:', err);
       setError('A network error occurred during registration. Please try again.');
     } finally {
-      setIsLoading(false); // End loading regardless of success or failure
+      setIsLoading(false);
     }
   };
 
@@ -161,34 +152,194 @@ export default function App() {
         console.error('Failed to clear server session:', error);
       }
     }
-    clearSession(); // Always clear client-side session regardless of server outcome
+    clearSession();
   };
 
-
-  // Render logged-in state or forms
+  // --- Render Dashboard Layout if Logged In ---
   if (isLoggedIn) {
     return (
-      <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8">
-        <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism text-center text-gray-100">
-          <h1 className="text-3xl font-bold">Welcome, {loggedInUserEmail}!</h1>
-          <p className="text-gray-400">You are successfully logged in.</p>
-          <button
-            onClick={() => handleLogout()} // Call handleLogout directly
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-gray-900 animated-button transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900"
-          >
-            Logout
-          </button>
-        </div>
+      <div className="flex h-screen w-full overflow-hidden"> {/* flex container for sidebar and main content */}
+        {/* Sidebar */}
+        <aside className="hidden md:flex flex-col w-64 bg-gray-800 p-4 shadow-xl overflow-y-auto custom-scrollbar"> {/* Added custom-scrollbar */}
+          {/* Top Section: Logo and Staff */}
+          <div className="mb-8 flex items-center p-2 rounded-lg bg-gray-700/50">
+            <svg className="h-8 w-8 text-green-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.001 12.001 0 0012 21a12.001 12.001 0 008.618-18.016z" />
+            </svg>
+            <div>
+              <h2 className="text-xl font-bold text-gray-100 leading-tight">Mintify Bites</h2>
+              <p className="text-gray-400 text-xs">12 staff</p>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative mb-6">
+            <input
+              type="text"
+              placeholder="Search anything"
+              className="w-full pl-10 pr-4 py-2 bg-gray-700/50 text-gray-200 border border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
+            />
+            <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+
+          {/* Main Navigation */}
+          <nav className="mb-6 space-y-2">
+            {[
+              { name: 'Dashboard', icon: '<path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l-7 7-7-7M20 10v10a1 1 0 01-1 1h-3M7 21h10a1 1 0 001-1V9.414a1 1 0 00-.293-.707l-1.414-1.414A1 1 0 0015.414 7H8.586a1 1 0 00-.707.293L6.293 8.586A1 1 0 006 9.414V21a1 1 0 001 1z"/>' },
+              { name: 'Notifications', count: 3, icon: '<path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>' },
+              { name: 'Tasks', icon: '<path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>' },
+              { name: 'Settings', icon: '<path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>' },
+            ].map(item => (
+              <a
+                key={item.name}
+                href="#"
+                className="flex items-center px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-colors text-sm"
+              >
+                <svg className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" dangerouslySetInnerHTML={{ __html: item.icon }}></svg>
+                {item.name}
+                {item.count && (
+                  <span className="ml-auto bg-green-500 text-xs font-bold px-2 py-0.5 rounded-full">
+                    {item.count}
+                  </span>
+                )}
+              </a>
+            ))}
+          </nav>
+
+          {/* Workspace Section */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between text-gray-400 mb-2 px-3">
+              <span className="text-xs uppercase font-semibold">Workspace</span>
+              <button className="text-gray-400 hover:text-white transition-colors">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </button>
+            </div>
+            <nav className="space-y-2">
+              {[
+                { name: 'Documents', icon: '<path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>' },
+                { name: 'Emails', icon: '<path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>' },
+                { name: 'Projects', icon: '<path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2h2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v2M7 7h10"/>' },
+                { name: 'Calendar', icon: '<path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>' },
+              ].map(item => (
+                <a
+                  key={item.name}
+                  href="#"
+                  className="flex items-center px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-colors text-sm"
+                >
+                  <svg className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" dangerouslySetInnerHTML={{ __html: item.icon }}></svg>
+                  {item.name}
+                </a>
+              ))}
+            </nav>
+          </div>
+
+          {/* Teamspace Section */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between text-gray-400 mb-2 px-3 cursor-pointer">
+              <span className="text-xs uppercase font-semibold">Teamspace</span>
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+            <nav className="space-y-2">
+              {[
+                { name: 'Project management' },
+                { name: 'Engineering' },
+                { name: 'Design' },
+              ].map(item => (
+                <a
+                  key={item.name}
+                  href="#"
+                  className="block px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-colors text-sm"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </nav>
+          </div>
+
+          {/* Labels Section */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between text-gray-400 mb-2 px-3 cursor-pointer">
+              <span className="text-xs uppercase font-semibold">Labels</span>
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+            <nav className="space-y-2">
+              {[
+                { name: 'Black Friday', color: 'bg-yellow-500' },
+                { name: 'Launch', color: 'bg-blue-500' },
+                { name: 'Marketing', color: 'bg-red-500' },
+                { name: 'Big campaign', color: 'bg-purple-500' },
+              ].map(item => (
+                <a
+                  key={item.name}
+                  href="#"
+                  className="flex items-center px-3 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-colors text-sm"
+                >
+                  <span className={`w-2 h-2 ${item.color} rounded-full mr-2`}></span>
+                  {item.name}
+                </a>
+              ))}
+            </nav>
+          </div>
+
+          {/* Logout Button in Sidebar */}
+          <div className="mt-auto pt-4 border-t border-gray-700"> {/* mt-auto pushes it to the bottom */}
+            <button
+              onClick={() => handleLogout()}
+              className="w-full flex items-center justify-center py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors text-sm"
+            >
+              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Logout
+            </button>
+          </div>
+
+        </aside>
+
+        {/* Main Content Area (right side) */}
+        {/* On smaller screens (md:hidden), the main content area will take full width when sidebar is hidden */}
+        <main className="flex-1 p-4 sm:p-8 overflow-y-auto custom-scrollbar"> {/* Added custom-scrollbar */}
+          <div className="w-full max-w-4xl mx-auto">
+            <h2 className="text-4xl font-bold mb-4 text-gray-100">Welcome to your Dashboard, {loggedInUserEmail}!</h2>
+            <p className="text-gray-400">This is where your main application content will go.</p>
+            {/* Example content */}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg glassmorphism-thin">
+                <h3 className="text-xl font-semibold text-gray-100 mb-2">Project Overview</h3>
+                <p className="text-gray-300 text-sm">
+                  For the "Black Friday 24 Big Campaign" we provide the strategic oversight of a complex marketing management. Each stakeholder - from the marketing teams, client support, or fulfillment - gets a tailored view of their responsibilities while staying updated on the overall progress.
+                </p>
+              </div>
+              <div className="bg-gray-800/50 p-6 rounded-lg shadow-lg glassmorphism-thin">
+                <h3 className="text-xl font-semibold text-gray-100 mb-2">Project Scope & Prioritization</h3>
+                <p className="text-gray-300 text-sm">
+                  1. Intelligent Task & Deal Management: Personal-to-Team Flow, Dynamic Deals Board.
+                  Black Friday campaigns are time-bound, high-stakes events that involve numerous stakeholders: marketing teams, client support, and fulfillment.
+                </p>
+              </div>
+            </div>
+            {/* ... more dashboard content will go here ... */}
+          </div>
+        </main>
       </div>
     );
   }
 
+  // --- Render Login/Register Form if Not Logged In ---
   return (
     <>
       <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8 overflow-hidden">
         <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism">
-          {isLoading ? ( // Conditional rendering based on isLoading state
-            <div className="flex flex-col items-center justify-center h-full min-h-[300px]"> {/* min-h to prevent layout shift */}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-full min-h-[300px]">
               <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
               <p className="text-gray-300 text-lg">Processing...</p>
             </div>
@@ -202,7 +353,7 @@ export default function App() {
               </div>
               <div className="text-center">
                 <h1 key={showRegisterForm ? "register-title" : "login-title"}
-                    className={`text-3xl font-bold text-fade-in-out ${showRegisterForm ? 'text-gray-100' : ''}`}>
+                    className={`text-3xl font-bold text-fade-in-out ${showRegisterForm ? 'text-gray-100' : 'bg-gradient-to-r from-cyan-400 via-white to-green-400 bg-clip-text text-transparent animated-text-gradient'}`}>
                   {showRegisterForm ? 'Create Account' : 'Jump In'}
                 </h1>
                 <p key={showRegisterForm ? "register-subtitle" : "login-subtitle"}
