@@ -1,8 +1,4 @@
-/* Add to your existing App.css */
-
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
 
 /* Keyframes for the animatedTextGradient (no longer used for Jump In, but kept if needed elsewhere) */
 @keyframes animatedTextGradient {
