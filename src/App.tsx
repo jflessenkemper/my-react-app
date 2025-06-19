@@ -266,202 +266,227 @@ export default function App() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('excelFile', excelFile);
-    formData.append('sessionId', sessionId); // Pass session ID with form data
+    // Read the file as an ArrayBuffer, then convert to Base64
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(excelFile);
 
-    try {
-      const response = await fetch('/api/upload-excel', {
-        method: 'POST',
-        body: formData, // No Content-Type header needed for FormData; browser sets it
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setUploadSuccess(data.message || 'Excel file uploaded and processed successfully!');
-        setExcelFile(null); // Clear file input preview
-        if (fileInputRef.current) {
-          fileInputRef.current.value = ''; // Clear actual file input element
-        }
-        // After successful upload, re-fetch the latest data for this user
-        const fetchResponse = await fetch('/api/get-excel-data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionId}` },
-            body: JSON.stringify({ sessionId })
-        });
-        const fetchResult = await fetchResponse.json();
-        if (fetchResponse.ok) {
-            setExcelData(fetchResult.excelData);
-        } else {
-            setUploadError(fetchResult.message || 'Failed to refresh Excel data after upload.');
-        }
-
-      } else {
-        setUploadError(data.message || 'Excel file upload failed.');
+    reader.onload = async (event) => {
+      if (!event.target?.result) {
+        setUploadError('Failed to read file.');
+        setIsUploading(false);
+        return;
       }
-    } catch (err) {
-      console.error('Network error during Excel upload:', err);
-      setUploadError('A network error occurred during upload.');
-    } finally {
-      setIsUploading(false); // End specific upload loading
-    }
+
+      const arrayBuffer = event.target.result as ArrayBuffer;
+      const base64String = btoa(
+        new Uint8Array(arrayBuffer)
+          .reduce((data, byte) => data + String.fromCharCode(byte), '')
+      );
+
+      const formData = new FormData();
+      formData.append('excelFileBase64', base64String); // Send as Base64 string
+      formData.append('fileName', excelFile.name); // Send filename separately
+      formData.append('sessionId', sessionId);
+
+      try {
+        const response = await fetch('/api/upload-excel', {
+          method: 'POST',
+          body: formData, // Browser sets Content-Type: multipart/form-data with boundary
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setUploadSuccess(data.message || 'Excel file uploaded and processed successfully!');
+          setExcelFile(null); // Clear file input preview
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ''; // Clear actual file input element
+          }
+          // After successful upload, re-fetch the latest data for this user
+          const fetchResponse = await fetch('/api/get-excel-data', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionId}` },
+              body: JSON.stringify({ sessionId })
+          });
+          const fetchResult = await fetchResponse.json();
+          if (fetchResponse.ok) {
+              setExcelData(fetchResult.excelData);
+          } else {
+              setUploadError(fetchResult.message || 'Failed to refresh Excel data after upload.');
+          }
+
+        } else {
+          setUploadError(data.message || 'Excel file upload failed.');
+        }
+      } catch (err) {
+        console.error('Network error during Excel upload:', err);
+        setUploadError('A network error occurred during upload. Please check console for details.');
+      } finally {
+        setIsUploading(false); // End specific upload loading
+      }
+    };
+
+    reader.onerror = () => {
+      setUploadError('Failed to read file.');
+      setIsUploading(false);
+    };
   };
 
 
   // --- Render Dashboard Layout if Logged In ---
   if (isLoggedIn) {
     return (
-      <div className="flex h-screen w-full overflow-hidden"> {/* flex container for sidebar and main content */}
-        {/* Sidebar */}
-        {/* Added glassmorphism to sidebar and adjusted width for mobile responsiveness */}
-        <aside className="hidden md:flex flex-col w-full md:w-64 bg-gray-800/50 p-4 shadow-xl overflow-y-auto custom-scrollbar glassmorphism">
-          {/* Top Section: Logo and Staff */}
-          <div className="mb-8 flex items-center p-2 rounded-lg bg-gray-700/50">
-            <svg className="h-8 w-8 text-green-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.001 12.001 0 0012 21a12.001 12.001 0 008.618-18.016z" />
-            </svg>
-            <div>
-              <h2 className="text-xl font-bold text-gray-100 leading-tight">Mintify Bites</h2>
-              <p className="text-gray-400 text-xs">12 staff</p>
+      // Main container for the entire application, spaced from edges and rounded
+      <div className="flex h-screen w-screen p-4 overflow-hidden">
+        <div className="flex flex-1 rounded-2xl overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area */}
+          {/* Sidebar */}
+          {/* Removed Mintify Bites, moved Experiments/Logout to top, condensed width */}
+          <aside className="flex flex-col w-24 bg-gray-800/50 p-2 custom-scrollbar glassmorphism">
+            {/* New: Experiments Tab */}
+            <div className="mb-auto"> {/* Pushes other content down */}
+              <button
+                onClick={() => setActiveTab('experiments')}
+                className={`w-full flex items-center justify-center py-2 px-1 rounded-lg transition-colors text-sm ${
+                  activeTab === 'experiments' ? 'bg-green-600 text-white' : 'hover:bg-gray-700 text-gray-200'
+                }`}
+                title="Experiments" // Tooltip for icon-only button
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-1-3m-6.938-9L2 7m9.593-1.593a2.5 2.5 0 113.536 3.536L14.5 13.5 19 18l-1-1h4V9l-4-4m-7 7L9 10" />
+                </svg>
+                {/* No "Experiments" text here as requested for condensed bar, relying on tooltip */}
+              </button>
             </div>
-          </div>
 
-          {/* New: Experiments Tab */}
-          <div className="mt-auto mb-4 pt-4 border-t border-gray-700"> {/* Pushes tab to bottom, above logout */}
-            <button
-              onClick={() => setActiveTab('experiments')}
-              className={`w-full flex items-center justify-center py-2 px-4 rounded-lg transition-colors text-sm ${
-                activeTab === 'experiments' ? 'bg-green-600 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
-              }`}
-            >
-              <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-1-3m-6.938-9L2 7m9.593-1.593a2.5 2.5 0 113.536 3.536L14.5 13.5 19 18l-1-1h4V9l-4-4m-7 7L9 10" />
-              </svg>
-              Experiments
-            </button>
-          </div>
+            {/* Logout Button in Sidebar - text removed, icon-only */}
+            <div className="pt-2">
+              <button
+                onClick={() => handleLogout()}
+                className="w-full flex items-center justify-center py-2 px-1 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors text-sm"
+                title="Logout" // Tooltip for icon-only button
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                {/* No "Logout" text here as requested */}
+              </button>
+            </div>
 
-          {/* Logout Button in Sidebar - text removed */}
-          <div className="pt-2"> {/* No mt-auto here since Experiments tab is above */}
-            <button
-              onClick={() => handleLogout()}
-              className="w-full flex items-center justify-center py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors text-sm"
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              {/* No "Logout" text here as requested */}
-            </button>
-          </div>
+          </aside>
 
-        </aside>
-
-        {/* Main Content Area (right side) */}
-        <main className="flex-1 p-4 sm:p-8 overflow-y-auto custom-scrollbar">
-          {/* Conditional rendering for content based on activeTab */}
-          {activeTab === 'dashboard' && (
-            <div className="w-full max-w-4xl mx-auto text-gray-100">
-              <h2 className="text-4xl font-bold mb-6">Dashboard Overview</h2>
-              <p className="text-gray-400">Your central hub for quick insights.</p>
-              {/* You can add more dashboard widgets or content here */}
-              <div className="mt-8 bg-gray-800/50 p-6 rounded-lg glassmorphism-thin">
-                <h3 className="text-xl font-semibold mb-2">General Information</h3>
-                <p className="text-gray-300 text-sm">
-                  This section will contain summarized data and key performance indicators relevant to your account.
-                </p>
+          {/* Main Content Area (right side) */}
+          <main className="flex-1 p-4 sm:p-8 overflow-y-auto custom-scrollbar">
+            {/* Conditional rendering for content based on activeTab */}
+            {activeTab === 'dashboard' && (
+              <div className="w-full max-w-4xl mx-auto text-gray-100">
+                <h2 className="text-4xl font-bold mb-6">Dashboard Overview</h2>
+                <p className="text-gray-400">Your central hub for quick insights.</p>
+                <div className="mt-8 bg-gray-800/50 p-6 rounded-lg glassmorphism-thin">
+                  <h3 className="text-xl font-semibold mb-2">General Information</h3>
+                  <p className="text-gray-300 text-sm">
+                    This section will contain summarized data and key performance indicators relevant to your account.
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {activeTab === 'experiments' && (
-            <div className="w-full max-w-4xl mx-auto text-gray-100">
-              <h2 className="text-4xl font-bold mb-6">Experiments</h2>
-              <div className="bg-gray-800/50 p-6 rounded-lg glassmorphism">
-                {uploadError && (
-                  <div className="bg-red-500/20 border border-red-500/30 text-red-300 text-sm rounded-lg p-3 mb-4 text-center">
-                    {uploadError}
-                  </div>
-                )}
-                {uploadSuccess && (
-                  <div className="bg-green-500/20 border border-green-500/30 text-green-300 text-sm rounded-lg p-3 mb-4 text-center">
-                    {uploadSuccess}
-                  </div>
-                )}
-
-                {isUploading ? (
-                  <div className="flex flex-col items-center justify-center py-12">
-                    <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-                    <p className="text-gray-300 text-lg">Uploading and Processing Excel File...</p>
-                  </div>
-                ) : (
-                  <>
-                    <div
-                      onDrop={handleDrop}
-                      onDragOver={handleDragOver}
-                      onClick={() => fileInputRef.current?.click()}
-                      className="border-2 border-dashed border-gray-500 rounded-lg p-10 text-center text-gray-400 hover:border-green-500 hover:text-green-300 transition-colors cursor-pointer"
-                    >
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        accept=".xlsx, .xls"
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
-                      <svg className="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6H16a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2h.5M7 16l3-3m0 0l3 3m-3-3v8m-3-4h6" />
-                      </svg>
-                      <p className="text-lg font-semibold">Drag & Drop your Excel file here, or click to browse</p>
-                      {excelFile && <p className="mt-2 text-gray-300">Selected file: {excelFile.name}</p>}
+            {activeTab === 'experiments' && (
+              <div className="w-full max-w-4xl mx-auto text-gray-100">
+                <h2 className="text-4xl font-bold mb-6">Experiments</h2>
+                <div className="bg-gray-800/50 p-6 rounded-lg glassmorphism">
+                  {uploadError && (
+                    <div className="bg-red-500/20 border border-red-500/30 text-red-300 text-sm rounded-lg p-3 mb-4 text-center">
+                      {uploadError}
                     </div>
-                    {excelFile && (
-                      <button
-                        onClick={handleUploadExcel}
-                        className="w-full mt-4 py-3 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors text-sm font-bold"
-                      >
-                        Upload Selected File
-                      </button>
-                    )}
-                  </>
-                )}
-              </div>
+                  )}
+                  {uploadSuccess && (
+                    <div className="bg-green-500/20 border border-green-500/30 text-green-300 text-sm rounded-lg p-3 mb-4 text-center">
+                      {uploadSuccess}
+                    </div>
+                  )}
 
-              {/* Display Excel Data */}
-              {excelData && excelData.length > 0 && (
-                <div className="mt-8 bg-gray-800/50 p-6 rounded-lg glassmorphism-thin overflow-x-auto custom-scrollbar">
-                  <h3 className="text-xl font-semibold mb-4">Uploaded Data (First Sheet)</h3>
-                  <table className="min-w-full divide-y divide-gray-700">
-                    <thead className="bg-gray-700">
-                      <tr>
-                        {Object.keys(excelData[0]).map((key) => (
-                          <th
-                            key={key}
-                            scope="col"
-                            className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
-                          >
-                            {key}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-700">
-                      {excelData.map((row, rowIndex) => (
-                        <tr key={rowIndex} className="hover:bg-gray-700 transition-colors">
-                          {Object.values(row).map((value, colIndex) => (
-                            <td key={colIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                              {value !== null && value !== undefined ? String(value) : ''}
-                            </td>
+                  {isUploading ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                      <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+                      <p className="text-gray-300 text-lg">Uploading and Processing Excel File...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onClick={() => fileInputRef.current?.click()}
+                        className="border-2 border-dashed border-gray-500 rounded-lg p-10 text-center text-gray-400 hover:border-green-500 hover:text-green-300 transition-colors cursor-pointer"
+                      >
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          accept=".xlsx, .xls"
+                          onChange={handleFileChange}
+                          className="hidden"
+                        />
+                        <svg className="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6H16a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2h.5M7 16l3-3m0 0l3 3m-3-3v8m-3-4h6" />
+                        </svg>
+                        <p className="text-lg font-semibold">Drag & Drop your Excel file here, or click to browse</p>
+                        {excelFile && <p className="mt-2 text-gray-300">Selected file: {excelFile.name}</p>}
+                      </div>
+                      {excelFile && (
+                        <button
+                          onClick={handleUploadExcel}
+                          className="w-full mt-4 py-3 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors text-sm font-bold"
+                        >
+                          Upload Selected File
+                        </button>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* Display Excel Data */}
+                {excelData && excelData.length > 0 ? (
+                  <div className="mt-8 bg-gray-800/50 p-6 rounded-lg glassmorphism-thin overflow-x-auto custom-scrollbar">
+                    <h3 className="text-xl font-semibold mb-4">Uploaded Data (First Sheet)</h3>
+                    <table className="min-w-full divide-y divide-gray-700">
+                      <thead className="bg-gray-700">
+                        <tr>
+                          {Object.keys(excelData[0]).map((key) => (
+                            <th
+                              key={key}
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                            >
+                              {key}
+                            </th>
                           ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          )}
-        </main>
+                      </thead>
+                      <tbody className="divide-y divide-gray-700">
+                        {excelData.map((row, rowIndex) => (
+                          <tr key={rowIndex} className="hover:bg-gray-700 transition-colors">
+                            {Object.values(row).map((value, colIndex) => (
+                              <td key={colIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
+                                {value !== null && value !== undefined ? String(value) : ''}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="mt-8 text-gray-400 text-center">
+                    {isLoading ? (
+                      <p>Loading previous Excel data...</p>
+                    ) : (
+                      <p>No Excel data uploaded yet for this user.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </main>
+        </div>
       </div>
     );
   }
@@ -486,7 +511,7 @@ export default function App() {
               </div>
               <div className="text-center">
                 <h1 key={showRegisterForm ? "register-title" : "login-title"}
-                    className={`text-3xl font-bold text-fade-in-out text-gray-100`}> {/* Removed gradient and animation classes */}
+                    className={`text-3xl font-bold text-fade-in-out text-gray-100`}> {/* Removed gradient and animation classes, made white */}
                   {showRegisterForm ? 'Create Account' : 'Jump In'}
                 </h1>
                 <p key={showRegisterForm ? "register-subtitle" : "login-subtitle"}

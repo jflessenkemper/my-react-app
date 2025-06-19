@@ -1,5 +1,8 @@
-@import "tailwindcss";
 /* Add to your existing App.css */
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 /* Keyframes for the animatedTextGradient (no longer used for Jump In, but kept if needed elsewhere) */
 @keyframes animatedTextGradient {
@@ -52,6 +55,17 @@
   border-radius: 10px; /* Rounded corners */
   border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
 }
+
+/* NEW: Glassmorphism for the entire dashboard container (main app area when logged in) */
+.glassmorphism-dashboard-container {
+  background: rgba(20, 20, 20, 0.5); /* Matches other glassmorphism elements */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 1.5rem; /* Smoother border radius as requested, Tailwind's rounded-2xl is 1rem */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* Added back a subtle shadow for this larger container */
+}
+
 
 /* A lighter glassmorphism for content cards in the dashboard */
 .glassmorphism-thin {
