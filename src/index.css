@@ -32,6 +32,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  /* Ensure the background gradient is applied here only */
+  background: linear-gradient(-45deg, #0a0a0a, #1a1a1a, #2a2a2a, #1c1c1c);
+  background-size: 400% 400%;
+  animation: gradient-bg 15s ease infinite;
   font-family: 'Inter', sans-serif; /* Keep Inter font as requested previously */
 }
 

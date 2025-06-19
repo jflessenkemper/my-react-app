@@ -1,29 +1,29 @@
 @import "tailwindcss";
 /* Add to your existing App.css */
 
-/* New Keyframes for the animatedTextGradient (for "Jump In" text) */
+/* Keyframes for the animatedTextGradient (no longer used for Jump In, but kept if needed elsewhere) */
 @keyframes animatedTextGradient {
   to {
     background-position: 200% center; /* Moves the background gradient from left to right */
   }
 }
 
-/* New Class for the animated radial gradient text */
+/* Class for the animated radial gradient text (no longer applied to Jump In) */
 .animated-text-gradient {
   background: radial-gradient(
-    circle at 100%, /* Start radial gradient from the right edge */
-    #b6ffb6, /* Light green */
-    #90ee90 50%, /* Lighter green */
-    #9effff 75%, /* Light aqua */
-    #00ffff 75% /* Bright aqua */
+    circle at 100%,
+    #b6ffb6,
+    #90ee90 50%,
+    #9effff 75%,
+    #00ffff 75%
   );
-  font-weight: 600; /* Often makes gradient text stand out */
-  background-size: 200% auto; /* Ensures the gradient is wider than the text, allowing it to move */
-  color: #000; /* This color is masked by background-clip: text; */
+  font-weight: 600;
+  background-size: 200% auto;
+  color: #000;
   background-clip: text;
-  -webkit-background-clip: text; /* For Webkit browsers */
-  -webkit-text-fill-color: transparent; /* Makes the text transparent, showing the background */
-  animation: animatedTextGradient 3s linear infinite; /* Apply the new animation */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: animatedTextGradient 3s linear infinite;
 }
 
 /* Keyframes for text fade-in/out */
@@ -43,7 +43,7 @@
   animation: fade-in-slide-up 0.8s ease-out forwards; /* Changed from 0.4s to 0.8s for a slower fade */
 }
 
-/* Glassmorphism styles for the form container - removed transition-all */
+/* Glassmorphism styles for the form container and sidebar */
 .glassmorphism {
   background: rgba(20, 20, 20, 0.5); /* Semi-transparent dark background */
   box-shadow: none; /* Explicitly removed as requested */
@@ -51,7 +51,6 @@
   -webkit-backdrop-filter: blur(12px); /* For Safari compatibility */
   border-radius: 10px; /* Rounded corners */
   border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
-  /* NO transition-all here to remove form height animation */
 }
 
 /* A lighter glassmorphism for content cards in the dashboard */
@@ -89,7 +88,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  /* background-color: #2C2F33; This might be overridden by index.css gradient */
 }
 
 input:focus {
@@ -114,6 +112,7 @@ button {
 button:hover {
   filter: brightness(90%);
 }
+
 
 /* --- Loader/Spinner Styles --- */
 @keyframes spin {
