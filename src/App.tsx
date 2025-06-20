@@ -386,19 +386,15 @@ export default function App() {
           {/* Sidebar */}
           {/* Removed Mintify Bites, moved Excel/Logout to top, condensed width */}
           <aside className="flex flex-row w-fit max-w-fit h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center
-             lg:flex-col lg:w-24 lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-2 lg:py-2 lg:mt-4 lg:ml-4 lg:rounded-lg lg:items-start lg:h-[10vh] lg:justify-start">
+             lg:flex-col lg:w-32 lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-2 lg:py-2 lg:mt-4 lg:ml-4 lg:rounded-lg lg:items-start lg:h-[10vh] lg:justify-start">
             {/* New: Excel Tab */}
-            <div className="flex-none"> {/* Pushes other content down */}
+            <div className="flex-none">
               <button
                 onClick={() => setActiveTab('excel')}
-                className={`flex items-center justify-center py-2 px-1 rounded-lg transition-colors text-sm w-auto mr-2 lg:w-full lg:mr-0 ${
-                  activeTab === 'excel' ? 'bg-excel-green/80 text-white' : 'hover:bg-gray-700 text-gray-200'
-                }`}
+                className="flex items-center justify-center py-2 px-1 rounded-lg transition-colors text-sm w-auto mr-2 lg:w-full lg:mr-0 bg-excel-green/50 hover:bg-excel-green/70 text-white"
                 title="Excel" // Tooltip for icon-only button
               >
-                <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 27 40">
-                  <path d="M24,3 L3,3 L3,36 L24,36 M3,20 L20,20"/>
-                </svg>
+                <span className="text-white font-bold text-lg">E</span>
               </button>
             </div>
 
@@ -627,12 +623,13 @@ export default function App() {
                 </div>
 
                 {/* Submit Button */}
-                <div>
+                <div className="relative">
+                  {isLoading && <div className="loading-border-animation"></div>} {/* New: Animated border behind button */}
                   <button
                     type="submit"
                     className={`w-full flex justify-center py-3 px-4 border rounded-lg shadow-sm text-sm font-bold text-gray-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900 ${
                       isLoading
-                        ? 'bg-gray-600 cursor-not-allowed border-gray-600 border-animated-loading' // Apply border animation when loading
+                        ? 'bg-gray-600 cursor-not-allowed border-gray-600' // No direct border on button when loading
                         : 'animated-button border-transparent'
                     }`}
                     disabled={isLoading}

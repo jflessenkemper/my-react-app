@@ -112,14 +112,21 @@
 }
 
 /* New: Border animation for loading state */
-@keyframes border-shimmer {
-  0% { border-color: #90ee90; }
-  50% { border-color: #00ffff; }
-  100% { border-color: #90ee90; }
+@keyframes rotate-border {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.border-animated-loading {
-  animation: border-shimmer 1.5s infinite alternate ease-in-out;
+.loading-border-animation {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(90deg, #90ee90, #00ffff); /* Green to Aqua */
+  animation: rotate-border 3s linear infinite;
+  border-radius: 10px; /* Match button's border-radius */
+  z-index: -1; /* Behind the button */
 }
 
 /* Base styles that might be in index.css but often useful here for direct control */
