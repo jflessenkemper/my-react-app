@@ -392,8 +392,8 @@ export default function App() {
       <div className="flex h-screen w-screen overflow-hidden">
         <div className="flex flex-1 overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with no padding on this container */}
           {/* Left Sidebar / Mobile Bottom Bar */}
-          <aside className="flex flex-row w-fit max-w-[95vw] h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center items-center gap-x-4 z-50
-             lg:flex-col lg:w-64 lg:h-screen lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-4 lg:py-6 lg:rounded-none lg:items-start lg:justify-start lg:gap-y-2">
+          <aside className="flex flex-row w-fit max-w-[95vw] h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center items-center gap-x-4 z-50
+             lg:flex-col lg:w-64 lg:h-screen lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-4 lg:py-6 lg:rounded-none lg:items-start lg:justify-start lg:gap-y-2 lg:border-r-2 lg:border-gray-700/50">
 
             {/* Navigation Links - Desktop */}
             <nav className="hidden lg:block w-full">
@@ -401,23 +401,21 @@ export default function App() {
                 <li>
                   <button
                     onClick={() => setActiveTab('excel')}
-                    className={`flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'text-gray-300 hover:bg-gray-700/50'}`}
+                    className={`flex items-center w-10 h-10 p-2 rounded-full transition-colors text-sm font-medium ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'text-gray-300 hover:bg-gray-700/50'} justify-center items-center`}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-4m0 0V7m0 6a2 2 0 100 4 2 2 0 000-4zM19 17v-4m0 0V7m0 6a2 2 0 100 4 2 2 0 000-4zM5 12h.01M12 12h.01M19 12h.01" />
                     </svg>
-                    Excel
                   </button>
                 </li>
                 <li>
                   <button
                     onClick={() => handleLogout()}
-                    className="flex items-center w-10 h-10 p-2 rounded-full transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50 justify-center"
+                    className="flex items-center w-10 h-10 p-2 rounded-full transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50 justify-center items-center"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
-                    <span className="sr-only">Logout</span>
                   </button>
                 </li>
               </ul>
@@ -427,21 +425,19 @@ export default function App() {
             <nav className="flex lg:hidden w-full justify-around items-center space-x-4">
               <button
                 onClick={() => setActiveTab('excel')}
-                className={`flex flex-col items-center w-12 h-12 p-2 rounded-full transition-colors text-xs font-medium ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'text-gray-300 hover:bg-gray-700/50'} justify-center`}
+                className={`flex flex-col items-center w-12 h-12 p-2 rounded-full transition-colors text-xs font-medium ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'text-gray-300 hover:bg-gray-700/50'} justify-center items-center`}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-4m0 0V7m0 6a2 2 0 100 4 2 2 0 000-4zM19 17v-4m0 0V7m0 6a2 2 0 100 4 2 2 0 000-4zM5 12h.01M12 12h.01M19 12h.01" />
                 </svg>
-                <span className="sr-only">Excel</span>
               </button>
               <button
                 onClick={() => handleLogout()}
-                className="flex flex-col items-center w-12 h-12 p-2 rounded-full transition-colors text-xs font-medium text-gray-300 hover:bg-gray-700/50 justify-center"
+                className="flex flex-col items-center w-12 h-12 p-2 rounded-full transition-colors text-xs font-medium text-gray-300 hover:bg-gray-700/50 justify-center items-center"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-1 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                <span className="sr-only">Logout</span>
               </button>
             </nav>
 
