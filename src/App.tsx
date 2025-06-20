@@ -349,7 +349,8 @@ export default function App() {
         <div className="flex flex-1 overflow-hidden p-4 glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with padding */}
           {/* Sidebar */}
           {/* Removed Mintify Bites, moved Excel/Logout to top, condensed width */}
-          <aside className="flex flex-col w-24 bg-gray-800/50 p-2 custom-scrollbar glassmorphism mt-4 ml-4 glass-shimmer-on-hover flex-grow-0 flex-shrink-0 sm:flex-row sm:w-auto sm:h-auto sm:fixed sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2 sm:px-6 sm:py-3 sm:rounded-full">
+          <aside className="flex flex-row w-full h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center
+             lg:flex-col lg:w-24 lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-2 lg:py-2 lg:mt-4 lg:ml-4 lg:rounded-lg">
             {/* New: Excel Tab */}
             <div className=""> {/* Pushes other content down */}
               <button
@@ -366,7 +367,7 @@ export default function App() {
             </div>
 
             {/* Logout Button in Sidebar - text removed, icon-only */}
-            <div className="pt-2 sm:order-first sm:pt-0 sm:mr-4">
+            <div className="pt-2 order-first mr-4 lg:order-last lg:pt-2 lg:mr-0">
               <button
                 onClick={() => handleLogout()}
                 className="w-full flex items-center justify-center py-2 px-1 rounded-lg bg-red-600/50 hover:bg-red-700/50 text-white transition-colors text-sm"
