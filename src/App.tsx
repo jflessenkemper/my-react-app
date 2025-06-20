@@ -349,13 +349,13 @@ export default function App() {
         <div className="flex flex-1 overflow-hidden p-4 glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with padding */}
           {/* Sidebar */}
           {/* Removed Mintify Bites, moved Excel/Logout to top, condensed width */}
-          <aside className="flex flex-row w-full h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center
-             lg:flex-col lg:w-24 lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-2 lg:py-2 lg:mt-4 lg:ml-4 lg:rounded-lg">
+          <aside className="flex flex-row w-fit max-w-fit h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center
+             lg:flex-col lg:w-24 lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-2 lg:py-2 lg:mt-4 lg:ml-4 lg:rounded-lg lg:items-start lg:h-[10vh] lg:justify-start">
             {/* New: Excel Tab */}
-            <div className=""> {/* Pushes other content down */}
+            <div className="flex-none"> {/* Pushes other content down */}
               <button
                 onClick={() => setActiveTab('excel')}
-                className={`w-full flex items-center justify-center py-2 px-1 rounded-lg transition-colors text-sm ${
+                className={`flex items-center justify-center py-2 px-1 rounded-lg transition-colors text-sm w-auto mr-2 lg:w-full lg:mr-0 ${
                   activeTab === 'excel' ? 'bg-excel-green/80 text-white' : 'hover:bg-gray-700 text-gray-200'
                 }`}
                 title="Excel" // Tooltip for icon-only button
@@ -367,10 +367,10 @@ export default function App() {
             </div>
 
             {/* Logout Button in Sidebar - text removed, icon-only */}
-            <div className="pt-2 order-first mr-4 lg:order-last lg:pt-2 lg:mr-0">
+            <div className="pt-2 order-first mr-4 flex-none lg:order-last lg:pt-2 lg:mr-0">
               <button
                 onClick={() => handleLogout()}
-                className="w-full flex items-center justify-center py-2 px-1 rounded-lg bg-red-600/50 hover:bg-red-700/50 text-white transition-colors text-sm"
+                className="flex items-center justify-center py-2 px-1 rounded-lg bg-red-600/50 hover:bg-red-700/50 text-white transition-colors text-sm w-auto mr-2 lg:w-full lg:mr-0"
                 title="Logout" // Tooltip for icon-only button
               >
                 <svg className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
