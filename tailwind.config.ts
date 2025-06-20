@@ -5,7 +5,11 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'excel-green': '#1D6F42',
+      },
+    },
   },
   plugins: [],
 } satisfies import('tailwindcss').Config;

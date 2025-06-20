@@ -16,13 +16,13 @@ export default function App() {
   const [showRegisterForm, setShowRegisterForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // New state for global loading indicator (for login/register/initial Excel fetch)
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'experiments'>('dashboard'); // State for active tab
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'excel'>('dashboard'); // State for active tab
 
   // States for Excel upload functionality
   const [excelFile, setExcelFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false); // Specific loading for Excel upload
   const [uploadError, setUploadError] = useState('');
-  const [uploadSuccess, setUploadSuccess] = useState('');
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
   const [excelData, setExcelData] = useState<ExcelRow[] | null>(null); // State to store fetched Excel data
 
   const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -91,10 +91,10 @@ export default function App() {
     };
   }, []); // Run only once on mount
 
-  // Effect to fetch Excel data when Experiments tab is active and user is logged in
+  // Effect to fetch Excel data when Excel tab is active and user is logged in
   useEffect(() => {
     const fetchExcelData = async () => {
-      if (activeTab === 'experiments' && isLoggedIn) {
+      if (activeTab === 'excel' && isLoggedIn) {
         setUploadError('');
         setUploadSuccess('');
         setIsLoading(true); // Use global loading for fetching Excel data
@@ -132,12 +132,16 @@ export default function App() {
           setIsLoading(false);
         }
       } else {
-        // Clear Excel data if not on experiments tab or not logged in
+        // Clear Excel data if not on Excel tab or not logged in
         setExcelData(null);
       }
     };
 
-    fetchExcelData();
+    if (activeTab === 'excel' && isLoggedIn) {
+      fetchExcelData();
+    } else if (activeTab !== 'excel' || !isLoggedIn) { // Clear Excel data if not on Excel tab or not logged in
+      clearExcelData();
+    }
   }, [activeTab, isLoggedIn]); // Re-fetch if tab changes or login status changes
 
   // Clears all form-related states (email, password, errors, messages)
@@ -332,6 +336,10 @@ export default function App() {
     };
   };
 
+  // Function to clear Excel data
+  const clearExcelData = () => {
+    setExcelData(null);
+  };
 
   // --- Render Dashboard Layout if Logged In ---
   if (isLoggedIn) {
@@ -340,21 +348,20 @@ export default function App() {
       <div className="flex h-screen w-screen overflow-hidden">
         <div className="flex flex-1 rounded-2xl overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area */}
           {/* Sidebar */}
-          {/* Removed Mintify Bites, moved Experiments/Logout to top, condensed width */}
-          <aside className="flex flex-col w-24 bg-gray-800/50 p-2 custom-scrollbar glassmorphism">
-            {/* New: Experiments Tab */}
+          {/* Removed Mintify Bites, moved Excel/Logout to top, condensed width */}
+          <aside className="flex flex-col w-24 h-[10vh] bg-gray-800/50 p-2 custom-scrollbar glassmorphism">
+            {/* New: Excel Tab */}
             <div className="mb-auto"> {/* Pushes other content down */}
               <button
-                onClick={() => setActiveTab('experiments')}
+                onClick={() => setActiveTab('excel')}
                 className={`w-full flex items-center justify-center py-2 px-1 rounded-lg transition-colors text-sm ${
-                  activeTab === 'experiments' ? 'bg-green-600 text-white' : 'hover:bg-gray-700 text-gray-200'
+                  activeTab === 'excel' ? 'bg-excel-green text-white' : 'hover:bg-gray-700 text-gray-200'
                 }`}
-                title="Experiments" // Tooltip for icon-only button
+                title="Excel" // Tooltip for icon-only button
               >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-1-3m-6.938-9L2 7m9.593-1.593a2.5 2.5 0 113.536 3.536L14.5 13.5 19 18l-1-1h4V9l-4-4m-7 7L9 10" />
+                <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20 3h-17c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h17c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zm-7.994 13h-4v-2h4v2zm-2-4h-2v-2h2v2zm2-4h-4v-2h4v2zm6.994 8h-4v-2h4v2zm-2-4h-2v-2h2v2zm2-4h-4v-2h4v2z"/>
                 </svg>
-                {/* No "Experiments" text here as requested for condensed bar, relying on tooltip */}
               </button>
             </div>
 
@@ -390,9 +397,9 @@ export default function App() {
               </div>
             )}
 
-            {activeTab === 'experiments' && (
+            {activeTab === 'excel' && (
               <div className="w-full max-w-4xl mx-auto text-gray-100">
-                <h2 className="text-4xl font-bold mb-6">Experiments</h2>
+                <h2 className="text-4xl font-bold mb-6">Excel Dashboard</h2>
                 <div className="bg-gray-800/50 p-6 rounded-lg glassmorphism">
                   {uploadError && (
                     <div className="bg-red-500/20 border border-red-500/30 text-red-300 text-sm rounded-lg p-3 mb-4 text-center">
