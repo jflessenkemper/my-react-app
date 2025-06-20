@@ -18,7 +18,7 @@ export default function App() {
   const [emailError, setEmailError] = useState(false); // New state for email validation error
   const [passwordError, setPasswordError] = useState(false); // New state for password validation error
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'excel'>('dashboard'); // State for active tab
+  const [activeTab, setActiveTab] = useState<'excel' | 'excel'>('excel'); // State for active tab
 
   // States for Excel upload functionality
   const [excelFile, setExcelFile] = useState<File | null>(null);
@@ -190,7 +190,7 @@ export default function App() {
         console.log('Login successful!', data.user);
         setSuccessMessage('Login successful!');
         setSession(data.sessionId, data.expiresAt, data.user.email);
-        setActiveTab('dashboard'); // Go to dashboard after login
+        setActiveTab('excel'); // Go to excel after login
       } else {
         setError(data.message || 'Invalid credentials. Please try again.');
         setIsLoggedIn(false);
@@ -274,7 +274,7 @@ export default function App() {
       if (response.ok) {
         setSuccessMessage(data.message || 'Logged out successfully!');
         clearSession(); // Clear local session data
-        setActiveTab('dashboard'); // Redirect to dashboard or login
+        setActiveTab('excel'); // Redirect to excel
       } else {
         setError(data.message || 'Logout failed. Please try again.');
       }
@@ -394,245 +394,62 @@ export default function App() {
           {/* Left Sidebar / Mobile Bottom Bar */}
           <aside className="flex flex-row w-fit max-w-[95vw] h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center items-center gap-x-4 z-50
              lg:flex-col lg:w-64 lg:h-screen lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-4 lg:py-6 lg:rounded-none lg:items-start lg:justify-start lg:gap-y-2">
-            {/* Desktop-only: Mintify Bites Logo & Search - hidden on mobile */}
-            <div className="hidden lg:flex items-center justify-between w-full mb-6">
-              <div className="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M9.243 3.03a1 1 0 01.527 1.037L9.04 10l3.197 6.467a1 1 0 01-.986 1.488l-6-1.5a1 1 0 01-.482-1.258L7.82 9.04l-3.197-6.467a1 1 0 01.986-1.488l6 1.5z" clipRule="evenodd" />
-                </svg>
-                <span className="text-2xl font-bold text-gray-100">Mintify Bites</span>
-              </div>
-              {/* Search Icon / Command Palette - Placeholder */}
-              <button className="p-2 rounded-lg text-gray-400 hover:bg-gray-700/50">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-            </div>
-            {/* Desktop-only: Divider */}
-            <div className="hidden lg:block w-full h-px bg-gray-700/50 mb-6"></div>
 
-            {/* Navigation Links - Hidden on Mobile, Shown on Desktop */}
+            {/* Navigation Links - Desktop */}
             <nav className="hidden lg:block w-full">
               <ul className="space-y-2">
                 <li>
                   <button
-                    onClick={() => setActiveTab('dashboard')}
-                    className={`flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium ${activeTab === 'dashboard' ? 'bg-blue-600/50 text-white' : 'text-gray-300 hover:bg-gray-700/50'}`}
+                    onClick={() => setActiveTab('excel')}
+                    className={`flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'text-gray-300 hover:bg-gray-700/50'}`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l-7 7m7-7v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-4m0 0V7m0 6a2 2 0 100 4 2 2 0 000-4zM19 17v-4m0 0V7m0 6a2 2 0 100 4 2 2 0 000-4zM5 12h.01M12 12h.01M19 12h.01" />
                     </svg>
-                    Dashboard
+                    Excel
                   </button>
                 </li>
                 <li>
                   <button
-                    onClick={() => {/* Implement Notifications Logic */}}
+                    onClick={() => handleLogout()}
                     className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 17l-3 3m0 0l-3-3m3 3V2m0 16a2 2 0 110 4 2 2 0 010-4z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
-                    Notifications
+                    Logout
                   </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {/* Implement Tasks Logic */}}
-                    className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                    </svg>
-                    Tasks
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {/* Implement Settings Logic */}}
-                    className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.942 3.334.872 2.799 2.45a1.724 1.724 0 000 2.573c.942 1.543-.872 3.334-2.45 2.799a1.724 1.724 0 00-1.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-2.573 1.066c-.942 1.543.872 3.334-2.45-2.799a1.724 1.724 0 00-1.066 2.573z" />
-                    </svg>
-                    Settings
-                  </button>
-                </li>
-                <li className="mt-4"> {/* Spacing for new section */}
-                  <span className="text-xs uppercase text-gray-500 font-semibold mb-2 block">Workspace</span>
-                  <ul className="space-y-2">
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Documents Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Documents
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Emails Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        Emails
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Projects Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                        </svg>
-                        Projects
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Calendar Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h.01M7 12h.01M7 15h.01M17 12h.01M17 15h.01M17 18h.01M3 21h18a2 2 0 002-2V7a2 2 0 00-2-2H3a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        Calendar
-                      </button>
-                    </li>
-                  </ul>
-                </li>
-                <li className="mt-4"> {/* Spacing for new section */}
-                  <span className="text-xs uppercase text-gray-500 font-semibold mb-2 block">Teamspace</span>
-                  <ul className="space-y-2">
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Project Management Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                        Project management
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Engineering Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                        </svg>
-                        Engineering
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Design Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4z" />
-                        </svg>
-                        Design
-                      </button>
-                    </li>
-                  </ul>
-                </li>
-                <li className="mt-4"> {/* Spacing for new section */}
-                  <span className="text-xs uppercase text-gray-500 font-semibold mb-2 block">Labels</span>
-                  <ul className="space-y-2">
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Black Friday Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <span className="h-2 w-2 rounded-full bg-blue-500 mr-3"></span> {/* Placeholder color */}
-                        Black Friday
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Launch Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <span className="h-2 w-2 rounded-full bg-green-500 mr-3"></span> {/* Placeholder color */}
-                        Launch
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Marketing Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <span className="h-2 w-2 rounded-full bg-purple-500 mr-3"></span> {/* Placeholder color */}
-                        Marketing
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => {/* Implement Big Campaign Logic */}}
-                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
-                      >
-                        <span className="h-2 w-2 rounded-full bg-yellow-500 mr-3"></span> {/* Placeholder color */}
-                        Big campaign
-                      </button>
-                    </li>
-                  </ul>
                 </li>
               </ul>
             </nav>
 
-            {/* Excel Tab (visible on both mobile and desktop) */}
-            <div className="flex-none lg:w-full">
+            {/* Mobile Navigation - Only Excel and Logout visible for mobile, positioned at the bottom */}
+            <nav className="flex lg:hidden w-full justify-around items-center space-x-4">
               <button
                 onClick={() => setActiveTab('excel')}
-                className={`flex items-center justify-center py-2 px-4 rounded-lg transition-colors text-sm ${activeTab === 'excel' ? 'bg-[rgba(0,128,0,0.7)] text-white' : 'bg-[rgba(0,128,0,0.5)] hover:bg-[rgba(0,128,0,0.7)] text-white'} w-auto lg:w-full`}
-                title="Excel" // Tooltip for icon-only button
+                className={`flex flex-col items-center p-2 rounded-lg transition-colors text-xs font-medium ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'text-gray-300 hover:bg-gray-700/50'}`}
               >
-                <span className="text-white font-bold text-lg">E</span>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-4m0 0V7m0 6a2 2 0 100 4 2 2 0 000-4zM19 17v-4m0 0V7m0 6a2 2 0 100 4 2 2 0 000-4zM5 12h.01M12 12h.01M19 12h.01" />
+                </svg>
+                Excel
               </button>
-            </div>
-
-            {/* Logout Button in Sidebar - visible on both mobile and desktop */}
-            <div className="order-first mr-4 flex-none lg:order-last lg:mt-auto lg:mr-0 lg:w-full lg:pt-0">
               <button
                 onClick={() => handleLogout()}
-                className="flex items-center justify-center py-2 px-4 rounded-lg bg-red-600/50 hover:bg-red-700/50 text-white transition-colors text-sm w-auto lg:w-full"
-                title="Logout" // Tooltip for icon-only button
+                className="flex flex-col items-center p-2 rounded-lg transition-colors text-xs font-medium text-gray-300 hover:bg-gray-700/50"
               >
-                <svg className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                {/* No "Logout" text here as requested */}
+                Logout
               </button>
-            </div>
+            </nav>
 
           </aside>
 
           {/* Main Content Area (right side) */}
           <main className="flex-1 p-8 overflow-y-auto custom-scrollbar lg:pl-64"> {/* Added padding and lg:pl-64 for sidebar offset */}
             {/* Conditional rendering for content based on activeTab */}
-            {activeTab === 'dashboard' && (
-              <div className="w-full max-w-4xl mx-auto text-gray-100">
-                <h2 className="text-4xl font-bold mb-6">Dashboard Overview</h2>
-                <p className="text-gray-400">Your central hub for quick insights.</p>
-                <div className="mt-8 bg-gray-800/50 p-6 rounded-lg glassmorphism-thin">
-                  <h3 className="text-xl font-semibold mb-2">General Information</h3>
-                  <p className="text-gray-300 text-sm">
-                    This section will contain summarized data and key performance indicators relevant to your account.
-                  </p>
-                </div>
-              </div>
-            )}
-
             {activeTab === 'excel' && (
               <div className="w-full max-w-4xl mx-auto text-gray-100">
                 <h2 className="text-4xl font-bold mb-6">Excel Dashboard</h2>
