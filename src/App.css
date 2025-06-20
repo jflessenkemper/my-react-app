@@ -111,6 +111,17 @@
   100%{background-position:0% 50%}
 }
 
+/* New: Border animation for loading state */
+@keyframes border-shimmer {
+  0% { border-color: #90ee90; }
+  50% { border-color: #00ffff; }
+  100% { border-color: #90ee90; }
+}
+
+.border-animated-loading {
+  animation: border-shimmer 1.5s infinite alternate ease-in-out;
+}
+
 /* Base styles that might be in index.css but often useful here for direct control */
 body {
   margin: 0;

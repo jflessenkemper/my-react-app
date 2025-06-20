@@ -9,12 +9,14 @@ interface ExcelRow {
 export default function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInUserEmail, setLoggedInUserEmail] = useState<string | null>(null);
   const [showRegisterForm, setShowRegisterForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // New state for global loading indicator (for login/register/initial Excel fetch)
+  const [emailError, setEmailError] = useState(false); // New state for email validation error
+  const [passwordError, setPasswordError] = useState(false); // New state for password validation error
 
   const [activeTab, setActiveTab] = useState<'dashboard' | 'excel'>('dashboard'); // State for active tab
 
@@ -148,14 +150,32 @@ export default function App() {
   const clearFormStates = () => {
     setEmail('');
     setPassword('');
-    setError('');
-    setSuccessMessage('');
+    setError(null);
+    setSuccessMessage(null);
+    setEmailError(false);
+    setPasswordError(false);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearFormStates();
-    setIsLoading(true); // Start global loading
+
+    let hasError = false;
+    if (!email) {
+      setEmailError(true);
+      hasError = true;
+    }
+    if (!password) {
+      setPasswordError(true);
+      hasError = true;
+    }
+
+    if (hasError) {
+      return; // Stop form submission if there are errors
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setSuccessMessage(null);
 
     try {
       const response = await fetch('/api/login', {
@@ -186,8 +206,24 @@ export default function App() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearFormStates();
-    setIsLoading(true); // Start global loading
+
+    let hasError = false;
+    if (!email) {
+      setEmailError(true);
+      hasError = true;
+    }
+    if (!password) {
+      setPasswordError(true);
+      hasError = true;
+    }
+
+    if (hasError) {
+      return; // Stop form submission if there are errors
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setSuccessMessage(null);
 
     try {
       const response = await fetch('/api/register', {
@@ -504,12 +540,7 @@ export default function App() {
     <>
       <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8 overflow-hidden">
         <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism">
-          {isLoading ? ( // Conditional rendering based on isLoading state
-            <div className="flex flex-col items-center justify-center h-full min-h-[300px]"> {/* min-h to prevent layout shift */}
-              <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-              <p className="text-gray-300 text-lg">Processing...</p>
-            </div>
-          ) : (
+          {/* Always render content, control via isLoading */}
             <>
               {/* Lock Icon */}
               <div className="flex justify-center">
@@ -528,7 +559,7 @@ export default function App() {
                 </p>
               </div>
 
-              <form className="space-y-6" onSubmit={showRegisterForm ? handleRegister : handleLogin}>
+              <form className="space-y-6" onSubmit={showRegisterForm ? handleRegister : handleLogin} noValidate>
                 {error && (
                   <div className="bg-red-500/20 border border-red-500/30 text-red-300 text-sm rounded-lg p-3 text-center">
                     {error}
@@ -551,9 +582,11 @@ export default function App() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-neutral-700/50 text-gray-200 border border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300"
+                    className={`w-full pl-10 pr-4 py-3 bg-neutral-700/50 text-gray-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300 ${emailError ? 'border-red-500/50' : 'border-neutral-700'}`}
                     placeholder="Email Address"
                     required
+                    onFocus={() => setEmailError(false)} // Clear error on focus
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -568,9 +601,11 @@ export default function App() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-neutral-700/50 text-gray-200 border border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300"
+                    className={`w-full pl-10 pr-4 py-3 bg-neutral-700/50 text-gray-200 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300 ${passwordError ? 'border-red-500/50' : 'border-neutral-700'}`}
                     placeholder="Password"
                     required
+                    onFocus={() => setPasswordError(false)} // Clear error on focus
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -595,7 +630,12 @@ export default function App() {
                 <div>
                   <button
                     type="submit"
-                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-gray-900 animated-button transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900"
+                    className={`w-full flex justify-center py-3 px-4 border rounded-lg shadow-sm text-sm font-bold text-gray-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900 ${
+                      isLoading
+                        ? 'bg-gray-600 cursor-not-allowed border-gray-600 border-animated-loading' // Apply border animation when loading
+                        : 'animated-button border-transparent'
+                    }`}
+                    disabled={isLoading}
                   >
                     {showRegisterForm ? 'Register Account' : 'Sign In'}
                   </button>
@@ -633,7 +673,6 @@ export default function App() {
                 )}
               </div>
             </>
-          )}
         </div>
       </div>
     </>
