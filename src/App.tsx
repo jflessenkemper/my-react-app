@@ -346,10 +346,10 @@ export default function App() {
     return (
       // Main container for the entire application, spaced from edges and rounded
       <div className="flex h-screen w-screen overflow-hidden">
-        <div className="flex flex-1 rounded-2xl overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area */}
+        <div className="flex flex-1 overflow-hidden p-4 glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with padding */}
           {/* Sidebar */}
           {/* Removed Mintify Bites, moved Excel/Logout to top, condensed width */}
-          <aside className="flex flex-col w-24 h-[10vh] bg-gray-800/50 p-2 custom-scrollbar glassmorphism">
+          <aside className="flex flex-col w-24 bg-gray-800/50 p-2 custom-scrollbar glassmorphism mt-4 ml-4">
             {/* New: Excel Tab */}
             <div className="mb-auto"> {/* Pushes other content down */}
               <button
@@ -360,7 +360,7 @@ export default function App() {
                 title="Excel" // Tooltip for icon-only button
               >
                 <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20 3h-17c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h17c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zm-7.994 13h-4v-2h4v2zm-2-4h-2v-2h2v2zm2-4h-4v-2h4v2zm6.994 8h-4v-2h4v2zm-2-4h-2v-2h2v2zm2-4h-4v-2h4v2z"/>
+                  <path d="M20 3h-17c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h17c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zM9.994 16h-4v-2h4v2zm-2-4h-2v-2h2v2zm2-4h-4v-2h4v2zm6.994 8h-4v-2h4v2zm-2-4h-2v-2h2v2zm2-4h-4v-2h4v2z"/>
                 </svg>
               </button>
             </div>
@@ -369,10 +369,10 @@ export default function App() {
             <div className="pt-2">
               <button
                 onClick={() => handleLogout()}
-                className="w-full flex items-center justify-center py-2 px-1 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors text-sm"
+                className="w-full flex items-center justify-center py-2 px-1 rounded-lg bg-red-600/50 hover:bg-red-700/50 text-white transition-colors text-sm"
                 title="Logout" // Tooltip for icon-only button
               >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 {/* No "Logout" text here as requested */}

@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        'excel-green': '#1D6F42',
+        'excel-green': '#008000',
       },
     },
   },
