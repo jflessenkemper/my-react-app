@@ -84,13 +84,13 @@
 
 /* Class for the glass shimmer effect */
 .glass-shimmer-on-hover {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
-  background-size: 200% 100%;
-  transition: background-position 0.6s ease-out;
+  transition: background 0.5s ease-out, backdrop-filter 0.5s ease-out; /* Smooth transition for glassmorphism */
 }
 
 .glass-shimmer-on-hover:hover {
-  animation: glass-shimmer 1.2s forwards; /* A short, subtle animation */
+  background: rgba(255, 255, 255, 0.1); /* Subtle white overlay on hover */
+  backdrop-filter: blur(15px); /* Slightly increased blur on hover */
+  -webkit-backdrop-filter: blur(15px); /* For Safari */
 }
 
 /* Animated button style */

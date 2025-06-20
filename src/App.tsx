@@ -355,7 +355,7 @@ export default function App() {
               <button
                 onClick={() => setActiveTab('excel')}
                 className={`w-full flex items-center justify-center py-2 px-1 rounded-lg transition-colors text-sm ${
-                  activeTab === 'excel' ? 'bg-excel-green text-white' : 'hover:bg-gray-700 text-gray-200'
+                  activeTab === 'excel' ? 'bg-excel-green/80 text-white' : 'hover:bg-gray-700 text-gray-200'
                 }`}
                 title="Excel" // Tooltip for icon-only button
               >
