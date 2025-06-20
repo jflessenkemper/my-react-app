@@ -72,6 +72,27 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+/* Keyframes for subtle glass shimmer effect on hover */
+@keyframes glass-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Class for the glass shimmer effect */
+.glass-shimmer-on-hover {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+  background-size: 200% 100%;
+  transition: background-position 0.6s ease-out;
+}
+
+.glass-shimmer-on-hover:hover {
+  animation: glass-shimmer 1.2s forwards; /* A short, subtle animation */
+}
+
 /* Animated button style */
 .animated-button {
   background: linear-gradient(90deg, #00ffff, #90ee90, #00ffff); /* Aqua, Green, Aqua */

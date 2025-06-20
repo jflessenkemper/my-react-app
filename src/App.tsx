@@ -349,7 +349,7 @@ export default function App() {
         <div className="flex flex-1 overflow-hidden p-4 glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with padding */}
           {/* Sidebar */}
           {/* Removed Mintify Bites, moved Excel/Logout to top, condensed width */}
-          <aside className="flex flex-col w-24 bg-gray-800/50 p-2 custom-scrollbar glassmorphism mt-4 ml-4">
+          <aside className="flex flex-col w-24 bg-gray-800/50 p-2 custom-scrollbar glassmorphism mt-4 ml-4 glass-shimmer-on-hover">
             {/* New: Excel Tab */}
             <div className="mb-auto"> {/* Pushes other content down */}
               <button
@@ -359,8 +359,8 @@ export default function App() {
                 }`}
                 title="Excel" // Tooltip for icon-only button
               >
-                <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20 3h-17c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h17c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zM9.994 16h-4v-2h4v2zm-2-4h-2v-2h2v2zm2-4h-4v-2h4v2zm6.994 8h-4v-2h4v2zm-2-4h-2v-2h2v2zm2-4h-4v-2h4v2z"/>
+                <svg className="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 27 40">
+                  <path d="M24,3 L3,3 L3,36 L24,36 M3,20 L20,20"/>
                 </svg>
               </button>
             </div>
