@@ -337,7 +337,7 @@ export default function App() {
   if (isLoggedIn) {
     return (
       // Main container for the entire application, spaced from edges and rounded
-      <div className="flex h-screen w-screen p-4 overflow-hidden">
+      <div className="flex h-screen w-screen overflow-hidden">
         <div className="flex flex-1 rounded-2xl overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area */}
           {/* Sidebar */}
           {/* Removed Mintify Bites, moved Experiments/Logout to top, condensed width */}
