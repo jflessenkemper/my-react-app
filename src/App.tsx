@@ -250,28 +250,47 @@ export default function App() {
   };
 
   const handleLogout = async (sessionIdToClear?: string) => {
+    setIsLoading(true); // Start loading for logout
+    setError(null);
+    setSuccessMessage(null);
     const currentSessionId = sessionIdToClear || localStorage.getItem('sessionId');
-    if (currentSessionId) {
-      try {
-        await fetch('/api/logout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId: currentSessionId }),
-        });
-        console.log('Server session cleared.');
-      } catch (error) {
-        console.error('Failed to clear server session:', error);
-      }
+
+    if (!currentSessionId) {
+      console.log('No session to clear on server. Clearing local state only.');
+      clearSession();
+      setIsLoading(false);
+      return;
     }
-    clearSession();
+
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: currentSessionId }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage(data.message || 'Logged out successfully!');
+        clearSession(); // Clear local session data
+        setActiveTab('dashboard'); // Redirect to dashboard or login
+      } else {
+        setError(data.message || 'Logout failed. Please try again.');
+      }
+    } catch (err) {
+      console.error('Network error during logout:', err);
+      setError('A network error occurred during logout. Please try again.');
+    } finally {
+      setIsLoading(false); // End global loading
+    }
   };
 
-  // --- Excel Upload Handlers ---
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setExcelFile(event.target.files[0]);
-      setUploadError('');
-      setUploadSuccess('');
+      setUploadError(''); // Clear any previous upload errors
+      setUploadSuccess(null); // Clear any previous upload success message
     }
   };
 
@@ -280,7 +299,7 @@ export default function App() {
     if (event.dataTransfer.files && event.dataTransfer.files[0]) {
       setExcelFile(event.dataTransfer.files[0]);
       setUploadError('');
-      setUploadSuccess('');
+      setUploadSuccess(null);
     }
   };
 
@@ -296,42 +315,31 @@ export default function App() {
 
     setIsUploading(true); // Start specific upload loading
     setUploadError('');
-    setUploadSuccess('');
-    setExcelData(null); // Clear previous data display while new file is uploaded
-    const sessionId = localStorage.getItem('sessionId');
+    setUploadSuccess(null);
 
-    if (!sessionId) {
+    const formData = new FormData();
+    formData.append('excel', excelFile);
+
+    const sessionId = localStorage.getItem('sessionId');
+    if (sessionId) {
+      formData.append('sessionId', sessionId);
+    } else {
       setUploadError('Session not found. Please log in again.');
       setIsUploading(false);
       return;
     }
 
-    // Read the file as an ArrayBuffer, then convert to Base64
     const reader = new FileReader();
-    reader.readAsArrayBuffer(excelFile);
+    reader.readAsDataURL(excelFile); // Read the file as a Data URL for preview if needed later
 
-    reader.onload = async (event) => {
-      if (!event.target?.result) {
-        setUploadError('Failed to read file.');
-        setIsUploading(false);
-        return;
-      }
-
-      const arrayBuffer = event.target.result as ArrayBuffer;
-      const base64String = btoa(
-        new Uint8Array(arrayBuffer)
-          .reduce((data, byte) => data + String.fromCharCode(byte), '')
-      );
-
-      const formData = new FormData();
-      formData.append('excelFileBase64', base64String); // Send as Base64 string
-      formData.append('fileName', excelFile.name); // Send filename separately
-      formData.append('sessionId', sessionId);
-
+    reader.onload = async () => {
       try {
         const response = await fetch('/api/upload-excel', {
           method: 'POST',
-          body: formData, // Browser sets Content-Type: multipart/form-data with boundary
+          headers: {
+            'Authorization': `Bearer ${sessionId}` // Send sessionId via Authorization header
+          },
+          body: formData,
         });
 
         const data = await response.json();
@@ -382,7 +390,7 @@ export default function App() {
     return (
       // Main container for the entire application, spaced from edges and rounded
       <div className="flex h-screen w-screen overflow-hidden">
-        <div className="flex flex-1 overflow-hidden p-4 glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with padding */}
+        <div className="flex flex-1 overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with padding */}
           {/* Sidebar */}
           {/* Removed Mintify Bites, moved Excel/Logout to top, condensed width */}
           <aside className="flex flex-row w-fit max-w-fit h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center
@@ -537,7 +545,6 @@ export default function App() {
       <div className="flex items-center justify-center h-screen w-full p-4 sm:p-8 overflow-hidden">
         <div className="w-full max-w-md p-8 space-y-8 rounded-2xl glassmorphism">
           {/* Always render content, control via isLoading */}
-            <>
               {/* Lock Icon */}
               <div className="flex justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
@@ -668,10 +675,8 @@ export default function App() {
                   </p>
                 )}
               </div>
-            </>
           </div>
         </div>
       </>
     );
   }
-}
