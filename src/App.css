@@ -95,11 +95,18 @@
 
 /* Animated button style */
 .animated-button {
-  /* Removed all animated button styles */
+  background: linear-gradient(90deg, #00ffff, #90ee90, #00ffff); /* Aqua, Green, Aqua */
+  background-size: 200% 200%; /* Allows for gradient movement */
+  animation: button-hover 5s ease infinite; /* Animation for the gradient background */
+  color: #000; /* Text color for the button */
+  border: none; /* Ensure no default border interferes */
+}
+
+.animated-button:hover {
+  animation-play-state: paused; /* Pause animation on hover */
 }
 
 @keyframes button-hover {
-  /* This keyframe is no longer used */
   0%{background-position:0% 50%}
   50%{background-position:100% 50%}
   100%{background-position:0% 50%}
