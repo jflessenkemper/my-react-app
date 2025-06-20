@@ -640,7 +640,7 @@ export default function App() {
                     }`}
                     disabled={isLoading}
                   >
-                    {showRegisterForm ? 'Register Account' : 'Sign In'}
+                    {isLoading ? <div className="button-spinner"></div> : (showRegisterForm ? 'Register Account' : 'Sign In')}
                   </button>
                 </div>
               </form>
