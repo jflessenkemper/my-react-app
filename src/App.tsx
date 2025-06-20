@@ -386,12 +386,12 @@ export default function App() {
           {/* Sidebar */}
           {/* Removed Mintify Bites, moved Excel/Logout to top, condensed width */}
           <aside className="flex flex-row w-fit max-w-fit h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center
-             lg:flex-col lg:w-32 lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-2 lg:py-2 lg:mt-4 lg:ml-4 lg:rounded-lg lg:items-start lg:h-[10vh] lg:justify-start">
+             lg:flex-col lg:w-32 lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-2 lg:py-2 lg:rounded-lg lg:items-start lg:h-[10vh] lg:justify-start lg:gap-y-2">
             {/* New: Excel Tab */}
             <div className="flex-none">
               <button
                 onClick={() => setActiveTab('excel')}
-                className="flex items-center justify-center py-2 px-1 rounded-lg transition-colors text-sm w-auto mr-2 lg:w-full lg:mr-0 bg-excel-green/50 hover:bg-excel-green/70 text-white"
+                className="flex items-center justify-center py-2 px-1 rounded-lg transition-colors text-sm w-auto mr-2 lg:w-full lg:mr-0 bg-[rgba(0,128,0,0.5)] hover:bg-[rgba(0,128,0,0.7)] text-white"
                 title="Excel" // Tooltip for icon-only button
               >
                 <span className="text-white font-bold text-lg">E</span>
@@ -399,7 +399,7 @@ export default function App() {
             </div>
 
             {/* Logout Button in Sidebar - text removed, icon-only */}
-            <div className="pt-2 order-first mr-4 flex-none lg:order-last lg:pt-2 lg:mr-0">
+            <div className="order-first mr-4 flex-none lg:order-last lg:pt-2 lg:mr-0">
               <button
                 onClick={() => handleLogout()}
                 className="flex items-center justify-center py-2 px-1 rounded-lg bg-red-600/50 hover:bg-red-700/50 text-white transition-colors text-sm w-auto mr-2 lg:w-full lg:mr-0"
@@ -623,14 +623,13 @@ export default function App() {
                 </div>
 
                 {/* Submit Button */}
-                <div className="relative">
-                  {isLoading && <div className="loading-border-animation"></div>} {/* New: Animated border behind button */}
+                <div>
                   <button
                     type="submit"
-                    className={`w-full flex justify-center py-3 px-4 border rounded-lg shadow-sm text-sm font-bold text-gray-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900 ${
+                    className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-gray-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900 ${
                       isLoading
-                        ? 'bg-gray-600 cursor-not-allowed border-gray-600' // No direct border on button when loading
-                        : 'animated-button border-transparent'
+                        ? 'bg-gray-600 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-700'
                     }`}
                     disabled={isLoading}
                   >
@@ -670,8 +669,9 @@ export default function App() {
                 )}
               </div>
             </>
+          </div>
         </div>
-      </div>
-    </>
-  );
+      </>
+    );
+  }
 }

@@ -95,39 +95,17 @@
 
 /* Animated button style */
 .animated-button {
-  background: linear-gradient(90deg, #00ffff, #90ee90, #00ffff); /* Aqua, Green, Aqua */
-  background-size: 200% 200%; /* Allows for gradient movement */
-  animation: button-hover 5s ease infinite; /* Animation for the gradient background */
-  color: #000; /* Text color for the button */
-}
-
-.animated-button:hover {
-  animation-play-state: paused; /* Pause animation on hover */
+  /* Removed all animated button styles */
 }
 
 @keyframes button-hover {
+  /* This keyframe is no longer used */
   0%{background-position:0% 50%}
   50%{background-position:100% 50%}
   100%{background-position:0% 50%}
 }
 
-/* New: Border animation for loading state */
-@keyframes rotate-border {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loading-border-animation {
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(90deg, #90ee90, #00ffff); /* Green to Aqua */
-  animation: rotate-border 3s linear infinite;
-  border-radius: 10px; /* Match button's border-radius */
-  z-index: -1; /* Behind the button */
-}
+/* Removed New: Border animation for loading state */
 
 /* Base styles that might be in index.css but often useful here for direct control */
 body {
