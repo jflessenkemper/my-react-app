@@ -390,27 +390,222 @@ export default function App() {
     return (
       // Main container for the entire application, spaced from edges and rounded
       <div className="flex h-screen w-screen overflow-hidden">
-        <div className="flex flex-1 overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with padding */}
-          {/* Sidebar */}
-          {/* Removed Mintify Bites, moved Excel/Logout to top, condensed width */}
-          <aside className="flex flex-row w-fit max-w-fit h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center
-             lg:flex-col lg:w-32 lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-2 lg:py-2 lg:rounded-lg lg:items-start lg:h-screen lg:justify-start lg:gap-y-2">
-            {/* New: Excel Tab */}
-            <div className="flex-none">
+        <div className="flex flex-1 overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with no padding on this container */}
+          {/* Left Sidebar / Mobile Bottom Bar */}
+          <aside className="flex flex-row w-fit max-w-[95vw] h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center items-center gap-x-4 z-50
+             lg:flex-col lg:w-64 lg:h-screen lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-4 lg:py-6 lg:rounded-none lg:items-start lg:justify-start lg:gap-y-2">
+            {/* Desktop-only: Mintify Bites Logo & Search - hidden on mobile */}
+            <div className="hidden lg:flex items-center justify-between w-full mb-6">
+              <div className="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M9.243 3.03a1 1 0 01.527 1.037L9.04 10l3.197 6.467a1 1 0 01-.986 1.488l-6-1.5a1 1 0 01-.482-1.258L7.82 9.04l-3.197-6.467a1 1 0 01.986-1.488l6 1.5z" clipRule="evenodd" />
+                </svg>
+                <span className="text-2xl font-bold text-gray-100">Mintify Bites</span>
+              </div>
+              {/* Search Icon / Command Palette - Placeholder */}
+              <button className="p-2 rounded-lg text-gray-400 hover:bg-gray-700/50">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </button>
+            </div>
+            {/* Desktop-only: Divider */}
+            <div className="hidden lg:block w-full h-px bg-gray-700/50 mb-6"></div>
+
+            {/* Navigation Links - Hidden on Mobile, Shown on Desktop */}
+            <nav className="hidden lg:block w-full">
+              <ul className="space-y-2">
+                <li>
+                  <button
+                    onClick={() => setActiveTab('dashboard')}
+                    className={`flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium ${activeTab === 'dashboard' ? 'bg-blue-600/50 text-white' : 'text-gray-300 hover:bg-gray-700/50'}`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l-7 7m7-7v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Dashboard
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => {/* Implement Notifications Logic */}}
+                    className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 17l-3 3m0 0l-3-3m3 3V2m0 16a2 2 0 110 4 2 2 0 010-4z" />
+                    </svg>
+                    Notifications
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => {/* Implement Tasks Logic */}}
+                    className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                    Tasks
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => {/* Implement Settings Logic */}}
+                    className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.942 3.334.872 2.799 2.45a1.724 1.724 0 000 2.573c.942 1.543-.872 3.334-2.45 2.799a1.724 1.724 0 00-1.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-2.573 1.066c-.942 1.543.872 3.334-2.45-2.799a1.724 1.724 0 00-1.066 2.573z" />
+                    </svg>
+                    Settings
+                  </button>
+                </li>
+                <li className="mt-4"> {/* Spacing for new section */}
+                  <span className="text-xs uppercase text-gray-500 font-semibold mb-2 block">Workspace</span>
+                  <ul className="space-y-2">
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Documents Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Documents
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Emails Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        Emails
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Projects Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        Projects
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Calendar Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h.01M7 12h.01M7 15h.01M17 12h.01M17 15h.01M17 18h.01M3 21h18a2 2 0 002-2V7a2 2 0 00-2-2H3a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Calendar
+                      </button>
+                    </li>
+                  </ul>
+                </li>
+                <li className="mt-4"> {/* Spacing for new section */}
+                  <span className="text-xs uppercase text-gray-500 font-semibold mb-2 block">Teamspace</span>
+                  <ul className="space-y-2">
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Project Management Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                        Project management
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Engineering Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                        Engineering
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Design Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4z" />
+                        </svg>
+                        Design
+                      </button>
+                    </li>
+                  </ul>
+                </li>
+                <li className="mt-4"> {/* Spacing for new section */}
+                  <span className="text-xs uppercase text-gray-500 font-semibold mb-2 block">Labels</span>
+                  <ul className="space-y-2">
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Black Friday Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <span className="h-2 w-2 rounded-full bg-blue-500 mr-3"></span> {/* Placeholder color */}
+                        Black Friday
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Launch Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <span className="h-2 w-2 rounded-full bg-green-500 mr-3"></span> {/* Placeholder color */}
+                        Launch
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Marketing Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <span className="h-2 w-2 rounded-full bg-purple-500 mr-3"></span> {/* Placeholder color */}
+                        Marketing
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => {/* Implement Big Campaign Logic */}}
+                        className="flex items-center w-full p-2 rounded-lg transition-colors text-sm font-medium text-gray-300 hover:bg-gray-700/50"
+                      >
+                        <span className="h-2 w-2 rounded-full bg-yellow-500 mr-3"></span> {/* Placeholder color */}
+                        Big campaign
+                      </button>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+
+            {/* Excel Tab (visible on both mobile and desktop) */}
+            <div className="flex-none lg:w-full">
               <button
                 onClick={() => setActiveTab('excel')}
-                className="flex items-center justify-center py-2 px-1 rounded-lg transition-colors text-sm w-auto mr-2 lg:w-full lg:mr-0 bg-[rgba(0,128,0,0.5)] hover:bg-[rgba(0,128,0,0.7)] text-white"
+                className={`flex items-center justify-center py-2 px-4 rounded-lg transition-colors text-sm ${activeTab === 'excel' ? 'bg-[rgba(0,128,0,0.7)] text-white' : 'bg-[rgba(0,128,0,0.5)] hover:bg-[rgba(0,128,0,0.7)] text-white'} w-auto lg:w-full`}
                 title="Excel" // Tooltip for icon-only button
               >
                 <span className="text-white font-bold text-lg">E</span>
               </button>
             </div>
 
-            {/* Logout Button in Sidebar - text removed, icon-only */}
-            <div className="order-first mr-4 flex-none lg:order-last lg:mr-0">
+            {/* Logout Button in Sidebar - visible on both mobile and desktop */}
+            <div className="order-first mr-4 flex-none lg:order-last lg:mt-auto lg:mr-0 lg:w-full lg:pt-0">
               <button
                 onClick={() => handleLogout()}
-                className="flex items-center justify-center py-2 px-1 rounded-lg bg-red-600/50 hover:bg-red-700/50 text-white transition-colors text-sm w-auto mr-2 lg:w-full lg:mr-0"
+                className="flex items-center justify-center py-2 px-4 rounded-lg bg-red-600/50 hover:bg-red-700/50 text-white transition-colors text-sm w-auto lg:w-full"
                 title="Logout" // Tooltip for icon-only button
               >
                 <svg className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -423,7 +618,7 @@ export default function App() {
           </aside>
 
           {/* Main Content Area (right side) */}
-          <main className="flex-1 p-4 sm:p-8 overflow-y-auto custom-scrollbar">
+          <main className="flex-1 p-8 overflow-y-auto custom-scrollbar lg:pl-64"> {/* Added padding and lg:pl-64 for sidebar offset */}
             {/* Conditional rendering for content based on activeTab */}
             {activeTab === 'dashboard' && (
               <div className="w-full max-w-4xl mx-auto text-gray-100">
