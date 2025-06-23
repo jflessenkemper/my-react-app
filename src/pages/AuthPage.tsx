@@ -312,7 +312,7 @@ export default function AuthPage({ setIsLoggedIn, setLoggedInUserEmail, setActiv
             className="text-blue-300 hover:text-blue-100 text-sm transition duration-300 ease-in-out glass-text-button"
             disabled={isLoading}
           >
-            {showRegisterForm ? 'Already have an account? Sign In' : 'Don't have an account? Register'}
+            {showRegisterForm ? 'Already have an account? Sign In' : 'Don\'t have an account? Register'}
           </button>
         </div>
       </div>
