@@ -393,7 +393,7 @@ export default function App() {
         <div className="flex flex-1 overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with no padding on this container */}
           {/* Left Sidebar / Mobile Bottom Bar */}
           <aside className="flex flex-row w-full h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center items-center gap-x-4 z-50 rounded-none border-t border-gray-700/50
-             lg:flex-col lg:h-screen lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-4 lg:py-6 lg:items-start lg:justify-start lg:gap-y-2">
+             lg:flex-col lg:h-screen lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-4 lg:py-6 lg:items-start lg:justify-start lg:gap-y-2 lg:w-fit lg:max-w-[95vw] lg:border-r-4 lg:border-gray-700/50">
 
             {/* Navigation Links - Desktop */}
             <nav className="hidden lg:block w-full">
