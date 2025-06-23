@@ -30,6 +30,8 @@ export default function App() {
   const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null); // Ref for hidden file input
 
+  const [selectedSource, setSelectedSource] = useState<string | null>(null);
+
   // Function to clear session data from local storage and state
   const clearSession = () => {
     localStorage.removeItem('sessionId');
@@ -422,15 +424,7 @@ export default function App() {
             </nav>
 
             {/* Mobile Navigation - Only Excel and Logout visible for mobile, positioned at the bottom */}
-            <nav className="flex lg:hidden w-full justify-around items-center space-x-4">
-              <button
-                onClick={() => setActiveTab('excel')}
-                className={`flex flex-col items-center w-24 h-24 p-1 transition-colors ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'} justify-center items-center rounded-lg`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-              </button>
+            <nav className="flex lg:hidden w-full justify-between items-center">
               <button
                 onClick={() => handleLogout()}
                 className="flex flex-col items-center w-24 h-24 p-1 transition-colors text-gray-300 bg-gray-800/50 hover:bg-gray-700/50 justify-center items-center rounded-lg"
@@ -439,106 +433,73 @@ export default function App() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
               </button>
+              <button
+                onClick={() => setActiveTab('excel')}
+                className={`flex flex-col items-center w-24 h-24 p-1 transition-colors ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'} justify-center items-center rounded-lg`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+              </button>
             </nav>
 
           </aside>
 
           {/* Main Content Area (right side) */}
-          <main className="flex-1 p-8 overflow-y-auto custom-scrollbar lg:pl-64"> {/* Added padding and lg:pl-64 for sidebar offset */}
+          <main className="flex-1 p-8 overflow-y-auto custom-scrollbar lg:pl-64 relative"> {/* Added relative for Connect button positioning */}
             {/* Conditional rendering for content based on activeTab */}
             {activeTab === 'excel' && (
               <div className="w-full max-w-4xl mx-auto text-gray-100">
                 <h2 className="text-4xl font-bold mb-6 text-center lg:text-left">Connect to an app</h2>
-                <div className="bg-gray-800/50 p-6 rounded-lg glassmorphism">
-                  {uploadError && (
-                    <div className="bg-red-500/20 border border-red-500/30 text-red-300 text-sm rounded-lg p-3 mb-4 text-center">
-                      {uploadError}
+                {/* New source selection UI */}
+                <div className="flex flex-col items-center">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                    {/* Everfit */}
+                    <div
+                      onClick={() => setSelectedSource('everfit')}
+                      className={`flex flex-col items-center justify-center w-40 h-40 bg-gray-800/70 rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'everfit' ? 'border-white' : 'border-transparent'} hover:border-white`}
+                    >
+                      {/* Placeholder Everfit SVG */}
+                      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" stroke="#00C2A8" strokeWidth="4" fill="#fff" />
+                        <text x="24" y="30" textAnchor="middle" fontSize="16" fill="#00C2A8" fontWeight="bold">EF</text>
+                      </svg>
+                      <span className="mt-4 text-lg font-semibold">Everfit App</span>
                     </div>
-                  )}
-                  {uploadSuccess && (
-                    <div className="bg-green-500/20 border border-green-500/30 text-green-300 text-sm rounded-lg p-3 mb-4 text-center">
-                      {uploadSuccess}
+                    {/* Excel */}
+                    <div
+                      onClick={() => setSelectedSource('excel')}
+                      className={`flex flex-col items-center justify-center w-40 h-40 bg-gray-800/70 rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'excel' ? 'border-white' : 'border-transparent'} hover:border-white`}
+                    >
+                      {/* Excel SVG (existing) */}
+                      <svg className="h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="4" width="18" height="16" rx="2" fill="#fff" stroke="#217346" strokeWidth="2" />
+                        <path d="M8 8l4 4-4 4" stroke="#217346" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <text x="12" y="16" textAnchor="middle" fontSize="8" fill="#217346" fontWeight="bold">XLSX</text>
+                      </svg>
+                      <span className="mt-4 text-lg font-semibold">Excel File</span>
                     </div>
-                  )}
-
-                  {isUploading ? (
-                    <div className="flex flex-col items-center justify-center py-12">
-                      <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-                      <p className="text-gray-300 text-lg">Uploading and Processing Excel File...</p>
+                    {/* Basiq */}
+                    <div
+                      onClick={() => setSelectedSource('basiq')}
+                      className={`flex flex-col items-center justify-center w-40 h-40 bg-gray-800/70 rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'basiq' ? 'border-white' : 'border-transparent'} hover:border-white`}
+                    >
+                      {/* Placeholder Basiq SVG */}
+                      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="4" y="4" width="40" height="40" rx="8" fill="#fff" stroke="#1A237E" strokeWidth="4" />
+                        <text x="24" y="30" textAnchor="middle" fontSize="16" fill="#1A237E" fontWeight="bold">Bq</text>
+                      </svg>
+                      <span className="mt-4 text-lg font-semibold">Bank Account</span>
                     </div>
-                  ) : (
-                    <>
-                      <div
-                        onDrop={handleDrop}
-                        onDragOver={handleDragOver}
-                        onClick={() => fileInputRef.current?.click()}
-                        className="border-2 border-dashed border-gray-500 rounded-lg p-10 text-center text-gray-400 hover:border-green-500 hover:text-green-300 transition-colors cursor-pointer"
-                      >
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          accept=".xlsx, .xls"
-                          onChange={handleFileChange}
-                          className="hidden"
-                        />
-                        <svg className="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6H16a2 2 0 012 2v10a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2h.5M7 16l3-3m0 0l3 3m-3-3v8m-3-4h6" />
-                        </svg>
-                        <p className="text-lg font-semibold">Drag & Drop your Excel file here, or click to browse</p>
-                        {excelFile && <p className="mt-2 text-gray-300">Selected file: {excelFile.name}</p>}
-                      </div>
-                      {excelFile && (
-                        <button
-                          onClick={handleUploadExcel}
-                          className="w-full mt-4 py-3 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors text-sm font-bold"
-                        >
-                          Upload Selected File
-                        </button>
-                      )}
-                    </>
-                  )}
+                  </div>
                 </div>
-
-                {/* Display Excel Data */}
-                {excelData && excelData.length > 0 ? (
-                  <div className="mt-8 bg-gray-800/50 p-6 rounded-lg glassmorphism-thin overflow-x-auto custom-scrollbar">
-                    <h3 className="text-xl font-semibold mb-4">Uploaded Data (First Sheet)</h3>
-                    <table className="min-w-full divide-y divide-gray-700">
-                      <thead className="bg-gray-700">
-                        <tr>
-                          {Object.keys(excelData[0]).map((key) => (
-                            <th
-                              key={key}
-                              scope="col"
-                              className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
-                            >
-                              {key}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-700">
-                        {excelData.map((row, rowIndex) => (
-                          <tr key={rowIndex} className="hover:bg-gray-700 transition-colors">
-                            {Object.values(row).map((value, colIndex) => (
-                              <td key={colIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                                {value !== null && value !== undefined ? String(value) : ''}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="mt-8 text-gray-400 text-center">
-                    {isLoading ? (
-                      <p>Loading previous Excel data...</p>
-                    ) : (
-                      <p>No Excel data uploaded yet for this user.</p>
-                    )}
-                  </div>
-                )}
+                {/* Connect button bottom right */}
+                <button
+                  className={`fixed right-8 bottom-8 px-8 py-4 rounded-lg text-lg font-bold transition-colors shadow-lg ${selectedSource ? 'animated-button' : 'bg-gray-600 text-gray-300 cursor-not-allowed'}`}
+                  disabled={!selectedSource}
+                >
+                  Connect
+                </button>
               </div>
             )}
           </main>
