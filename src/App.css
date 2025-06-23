@@ -88,9 +88,9 @@
 }
 
 .glass-shimmer-on-hover:hover {
-  background: rgba(0, 0, 0, 0.2); /* Darker overlay on hover */
-  backdrop-filter: blur(18px); /* Slightly increased blur on hover, making it darker */
-  -webkit-backdrop-filter: blur(18px); /* For Safari */
+  background: rgba(255, 255, 255, 0.1); /* Subtle white overlay on hover */
+  backdrop-filter: blur(15px); /* Slightly increased blur on hover */
+  -webkit-backdrop-filter: blur(15px); /* For Safari */
 }
 
 /* Animated button style */
@@ -191,29 +191,4 @@ button:hover {
   width: 16px; /* Small spinner size */
   height: 16px;
   animation: spin 0.8s linear infinite;
-}
-
-.shadow-inner-custom {
-  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-}
-
-.glass-button {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-}
-
-.glass-button-disabled {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-}
-
-.glass-button-outline {
-  background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
 }
