@@ -457,7 +457,7 @@ export default function App() {
                     {/* Excel */}
                     <div
                       onClick={() => setSelectedSource('excel')}
-                      className={`relative flex flex-col items-center justify-center w-80 h-80 glassmorphism rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'excel' ? 'border-white' : 'border-transparent'} hover:border-white p-6`}
+                      className={`relative flex flex-col items-center justify-center w-80 h-80 glassmorphism rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'excel' ? 'border-white !border-r-white' : 'border-transparent'} hover:border-white p-6`}
                     >
                       {/* Excel SVG (existing) */}
                       <svg className="h-16 w-16 text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
