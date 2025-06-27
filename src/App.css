@@ -83,13 +83,12 @@
 
 /* Class for the glass shimmer effect */
 .glass-shimmer-on-hover {
-  transition: background 0.5s ease-out, backdrop-filter 0.5s ease-out; /* Smooth transition for glassmorphism */
+  transition: backdrop-filter 0.5s ease-out; /* Smooth transition for glassmorphism */
 }
 
 .glass-shimmer-on-hover:hover {
   background: rgba(255, 255, 255, 0.1); /* Subtle white overlay on hover */
   backdrop-filter: blur(15px); /* Slightly increased blur on hover */
-  -webkit-backdrop-filter: blur(15px); /* For Safari */
 }
 
 /* Animated button style */

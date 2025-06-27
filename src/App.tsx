@@ -450,14 +450,14 @@ export default function App() {
             {/* Conditional rendering for content based on activeTab */}
             {activeTab === 'excel' && (
               <div className="w-full max-w-4xl text-gray-100 lg:pl-8">
-                <h2 className="text-4xl font-bold mb-6 text-center lg:text-left">Connect to an app</h2>
+                <h2 className="text-4xl font-bold mb-6 text-left">Connect to an App</h2>
                 {/* New source selection UI */}
-                <div className="flex flex-col items-center">
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                <div className="flex flex-col">
+                  <div className="flex flex-col sm:flex-row gap-4 mb-8">
                     {/* Everfit */}
                     <div
                       onClick={() => setSelectedSource('everfit')}
-                      className={`flex flex-col items-center justify-center w-40 h-40 bg-gray-800/70 rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'everfit' ? 'border-white' : 'border-transparent'} hover:border-white`}
+                      className={`relative flex flex-col items-center justify-center w-40 h-40 bg-gray-800/70 rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'everfit' ? 'border-white' : 'border-transparent'} hover:border-white`}
                     >
                       {/* Placeholder Everfit SVG */}
                       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -465,11 +465,18 @@ export default function App() {
                         <text x="24" y="30" textAnchor="middle" fontSize="16" fill="#00C2A8" fontWeight="bold">EF</text>
                       </svg>
                       <span className="mt-4 text-lg font-semibold">Everfit App</span>
+                      {selectedSource === 'everfit' && (
+                        <button
+                          className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 w-10/12 rounded-lg text-sm font-bold transition-colors shadow-lg animated-button`}
+                        >
+                          Connect
+                        </button>
+                      )}
                     </div>
                     {/* Excel */}
                     <div
                       onClick={() => setSelectedSource('excel')}
-                      className={`flex flex-col items-center justify-center w-40 h-40 bg-gray-800/70 rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'excel' ? 'border-white' : 'border-transparent'} hover:border-white`}
+                      className={`relative flex flex-col items-center justify-center w-40 h-40 bg-gray-800/70 rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'excel' ? 'border-white' : 'border-transparent'} hover:border-white`}
                     >
                       {/* Excel SVG (existing) */}
                       <svg className="h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -478,11 +485,18 @@ export default function App() {
                         <text x="12" y="16" textAnchor="middle" fontSize="8" fill="#217346" fontWeight="bold">XLSX</text>
                       </svg>
                       <span className="mt-4 text-lg font-semibold">Excel File</span>
+                      {selectedSource === 'excel' && (
+                        <button
+                          className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 w-10/12 rounded-lg text-sm font-bold transition-colors shadow-lg animated-button`}
+                        >
+                          Connect
+                        </button>
+                      )}
                     </div>
                     {/* Basiq */}
                     <div
                       onClick={() => setSelectedSource('basiq')}
-                      className={`flex flex-col items-center justify-center w-40 h-40 bg-gray-800/70 rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'basiq' ? 'border-white' : 'border-transparent'} hover:border-white`}
+                      className={`relative flex flex-col items-center justify-center w-40 h-40 bg-gray-800/70 rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'basiq' ? 'border-white' : 'border-transparent'} hover:border-white`}
                     >
                       {/* Placeholder Basiq SVG */}
                       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -490,16 +504,16 @@ export default function App() {
                         <text x="24" y="30" textAnchor="middle" fontSize="16" fill="#1A237E" fontWeight="bold">Bq</text>
                       </svg>
                       <span className="mt-4 text-lg font-semibold">Bank Account</span>
+                      {selectedSource === 'basiq' && (
+                        <button
+                          className={`absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 w-10/12 rounded-lg text-sm font-bold transition-colors shadow-lg animated-button`}
+                        >
+                          Connect
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
-                {/* Connect button bottom right */}
-                <button
-                  className={`fixed right-8 bottom-[136px] px-8 py-4 rounded-lg text-lg font-bold transition-colors shadow-lg z-50 ${selectedSource ? 'animated-button' : 'bg-gray-600 text-gray-300 cursor-not-allowed'}`}
-                  disabled={!selectedSource}
-                >
-                  Connect
-                </button>
               </div>
             )}
           </main>
