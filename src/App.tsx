@@ -394,7 +394,7 @@ export default function App() {
       <div className="flex h-screen w-screen overflow-hidden">
         <div className="flex flex-1 overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with no padding on this container */}
           {/* Left Sidebar / Mobile Bottom Bar */}
-          <aside className="flex flex-row w-full h-auto fixed bottom-4 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center items-center gap-x-4 z-50 rounded-none border-t border-gray-700/50
+          <aside className="flex flex-row w-full h-auto fixed bottom-0 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center items-center gap-x-4 z-50 rounded-none border-t border-gray-700/50
              lg:flex-col lg:h-screen lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-4 lg:py-6 lg:items-start lg:justify-start lg:gap-y-2 lg:w-fit lg:max-w-[95vw] lg:border-r-4 lg:border-gray-700/50">
 
             {/* Navigation Links - Desktop */}
@@ -449,7 +449,7 @@ export default function App() {
           <main className="flex-1 p-8 overflow-y-auto custom-scrollbar lg:pl-64 relative"> {/* Added relative for Connect button positioning */}
             {/* Conditional rendering for content based on activeTab */}
             {activeTab === 'excel' && (
-              <div className="w-full max-w-4xl mx-auto text-gray-100">
+              <div className="w-full max-w-4xl text-gray-100 lg:pl-8">
                 <h2 className="text-4xl font-bold mb-6 text-center lg:text-left">Connect to an app</h2>
                 {/* New source selection UI */}
                 <div className="flex flex-col items-center">
@@ -495,7 +495,7 @@ export default function App() {
                 </div>
                 {/* Connect button bottom right */}
                 <button
-                  className={`fixed right-8 bottom-8 px-8 py-4 rounded-lg text-lg font-bold transition-colors shadow-lg ${selectedSource ? 'animated-button' : 'bg-gray-600 text-gray-300 cursor-not-allowed'}`}
+                  className={`fixed right-8 bottom-[136px] px-8 py-4 rounded-lg text-lg font-bold transition-colors shadow-lg z-50 ${selectedSource ? 'animated-button' : 'bg-gray-600 text-gray-300 cursor-not-allowed'}`}
                   disabled={!selectedSource}
                 >
                   Connect
