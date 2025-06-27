@@ -2,8 +2,21 @@ import { useState, useEffect, useRef } from 'react';
 import './App.css'; // This now contains all your custom styles and animations
 
 // Define a type for your Excel data row for better type safety
-interface ExcelRow {
-  [key: string]: any; // A row can have any string key with any value
+interface ParsedExcelData {
+  frequency_interval: string[];
+  income_source_1: string;
+  income_source_1_values: number[];
+  income_source_2: string;
+  income_source_2_values: number[];
+  income_total_label: string;
+  income_totals: number[];
+  expense_categories: string[];
+  expense_values: number[][]; // Assuming this is an array of arrays for rows x columns
+  expense_total_label: string;
+  expense_totals: number[];
+  profit_loss_section_label: string;
+  profit_loss_label: string;
+  profit_loss_values: number[];
 }
 
 export default function App() {
@@ -25,7 +38,7 @@ export default function App() {
   const [isUploading, setIsUploading] = useState(false); // Specific loading for Excel upload
   const [uploadError, setUploadError] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
-  const [excelData, setExcelData] = useState<ExcelRow[] | null>(null); // State to store fetched Excel data
+  const [excelData, setExcelData] = useState<ParsedExcelData | null>(null); // State to store fetched Excel data
 
   const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null); // Ref for hidden file input
@@ -534,6 +547,97 @@ export default function App() {
                     </div>
                   </div>
                 </div>
+
+                {excelData && (
+                  <div className="mt-8 p-6 glassmorphism rounded-xl text-gray-100">
+                    <h3 className="text-2xl font-bold mb-4">Overview Data</h3>
+
+                    {/* Time Intervals (Headers) */}
+                    {excelData.frequency_interval && excelData.frequency_interval.length > 0 && (
+                      <div className="flex items-center space-x-4 mb-4 text-gray-300">
+                        <span className="font-semibold w-36 text-right">Intervals:</span>
+                        <div className="flex flex-wrap gap-x-4">
+                          {excelData.frequency_interval.map((interval, index) => (
+                            <span key={index} className="font-medium">{interval}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Income Section */}
+                    <h4 className="text-xl font-bold mt-6 mb-3">Income</h4>
+                    {excelData.income_source_1 && excelData.income_source_1_values && (
+                      <div className="flex items-center space-x-4 mb-2">
+                        <span className="font-semibold w-36 text-right">{excelData.income_source_1}:</span>
+                        <div className="flex flex-wrap gap-x-4">
+                          {excelData.income_source_1_values.map((value, index) => (
+                            <span key={index}>{value !== null ? value.toFixed(2) : '-'}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {excelData.income_source_2 && excelData.income_source_2_values && (
+                      <div className="flex items-center space-x-4 mb-2">
+                        <span className="font-semibold w-36 text-right">{excelData.income_source_2}:</span>
+                        <div className="flex flex-wrap gap-x-4">
+                          {excelData.income_source_2_values.map((value, index) => (
+                            <span key={index}>{value !== null ? value.toFixed(2) : '-'}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {excelData.income_total_label && excelData.income_totals && (
+                      <div className="flex items-center space-x-4 font-bold mt-4 border-t border-gray-700 pt-2">
+                        <span className="font-semibold w-36 text-right">{excelData.income_total_label}:</span>
+                        <div className="flex flex-wrap gap-x-4">
+                          {excelData.income_totals.map((value, index) => (
+                            <span key={index}>{value !== null ? value.toFixed(2) : '-'}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Expense Section */}
+                    <h4 className="text-xl font-bold mt-6 mb-3">Expenses</h4>
+                    {excelData.expense_categories && excelData.expense_values && (
+                      <div>
+                        {excelData.expense_categories.map((category, rowIndex) => (
+                          <div key={rowIndex} className="flex items-center space-x-4 mb-2">
+                            <span className="font-semibold w-36 text-right">{category}:</span>
+                            <div className="flex flex-wrap gap-x-4">
+                              {excelData.expense_values[rowIndex] && excelData.expense_values[rowIndex].map((value, colIndex) => (
+                                <span key={colIndex}>{value !== null ? value.toFixed(2) : '-'}</span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {excelData.expense_total_label && excelData.expense_totals && (
+                      <div className="flex items-center space-x-4 font-bold mt-4 border-t border-gray-700 pt-2">
+                        <span className="font-semibold w-36 text-right">{excelData.expense_total_label}:</span>
+                        <div className="flex flex-wrap gap-x-4">
+                          {excelData.expense_totals.map((value, index) => (
+                            <span key={index}>{value !== null ? value.toFixed(2) : '-'}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Profit/Loss Section */}
+                    <h4 className="text-xl font-bold mt-6 mb-3">Profit/Loss</h4>
+                    {excelData.profit_loss_label && excelData.profit_loss_values && (
+                      <div className="flex items-center space-x-4 mb-2">
+                        <span className="font-semibold w-36 text-right">{excelData.profit_loss_label}:</span>
+                        <div className="flex flex-wrap gap-x-4">
+                          {excelData.profit_loss_values.map((value, index) => (
+                            <span key={index}>{value !== null ? value.toFixed(2) : '-'}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </main>

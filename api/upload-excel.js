@@ -33,30 +33,167 @@ export default async function handler(req, res) {
     // 2. Decode the Base64 string back into a Buffer
     const excelBuffer = Buffer.from(excelFileBase64, 'base64');
 
-    // 3. Parse the Excel file (first sheet only)
+    // 3. Parse the Excel file and validate 'Overview' sheet
     const workbook = XLSX.read(excelBuffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0]; // Get the first sheet name
-    const worksheet = workbook.Sheets[sheetName];
-    const jsonData = XLSX.utils.sheet_to_json(worksheet); // Convert sheet to JSON array of objects
+    const overviewSheetName = 'Overview';
 
-    // 4. Store in the database (replace existing data for this user)
-    // To ensure "only show this data for the user who submitted it", we'll DELETE any
-    // previous Excel data for this user before inserting the new one.
-    // This assumes a user only has one active Excel data upload at a time.
+    if (!workbook.SheetNames.includes(overviewSheetName)) {
+      return res.status(400).json({ message: 'Excel file must contain an \'Overview\' sheet.' });
+    }
+
+    const worksheet = workbook.Sheets[overviewSheetName];
+
+    const dataSchema = [
+      {
+        cellRange: "K6:AD6",
+        description: "Time interval headers",
+        fieldName: "frequency_interval",
+        dataType: "string"
+      },
+      {
+        cellRange: "J7",
+        description: "Income source label 1",
+        fieldName: "income_source_1",
+        dataType: "string"
+      },
+      {
+        cellRange: "K7:AD7",
+        description: "Income source 1 values by time interval",
+        fieldName: "income_source_1_values",
+        dataType: "decimal"
+      },
+      {
+        cellRange: "J8",
+        description: "Income source label 2",
+        fieldName: "income_source_2",
+        dataType: "string"
+      },
+      {
+        cellRange: "K8:AD8",
+        description: "Income source 2 values by time interval",
+        fieldName: "income_source_2_values",
+        dataType: "decimal"
+      },
+      {
+        cellRange: "J18",
+        description: "Total income label",
+        fieldName: "income_total_label",
+        dataType: "string"
+      },
+      {
+        cellRange: "K18:AD18",
+        description: "Total income values by time interval",
+        fieldName: "income_totals",
+        dataType: "decimal"
+      },
+      {
+        cellRange: "J23:J34",
+        description: "Expense category labels",
+        fieldName: "expense_categories",
+        dataType: "string"
+      },
+      {
+        cellRange: "K23:AD34",
+        description: "Expense values by category and time interval",
+        fieldName: "expense_values",
+        dataType: "decimal"
+      },
+      {
+        cellRange: "J35",
+        description: "Total expenses label",
+        fieldName: "expense_total_label",
+        dataType: "string"
+      },
+      {
+        cellRange: "K35:AD35",
+        description: "Total expenses by time interval",
+        fieldName: "expense_totals",
+        dataType: "decimal"
+      },
+      {
+        cellRange: "J38",
+        description: "Profit/Loss overview section header",
+        fieldName: "profit_loss_section_label",
+        dataType: "string"
+      },
+      {
+        cellRange: "J40",
+        description: "Profit/Loss row label",
+        fieldName: "profit_loss_label",
+        dataType: "string"
+      },
+      {
+        cellRange: "K40:AD40",
+        description: "Profit/Loss values by time interval",
+        fieldName: "profit_loss_values",
+        dataType: "decimal"
+      }
+    ];
+
+    const extractedData = {};
+
+    for (const item of dataSchema) {
+      const range = XLSX.utils.decode_range(item.cellRange);
+      const values = [];
+
+      if (range.s.r === range.e.r && range.s.c === range.e.c) { // Single cell
+        const cellAddress = XLSX.utils.encode_cell({ r: range.s.r, c: range.s.c });
+        const cell = worksheet[cellAddress];
+        let value = (cell && cell.v !== undefined) ? cell.v : null;
+        if (item.dataType === 'decimal' && value !== null) {
+          value = parseFloat(value);
+          if (isNaN(value)) value = null; // Handle non-numeric values gracefully
+        }
+        extractedData[item.fieldName] = value;
+      } else if (range.s.c === range.e.c) { // Single column range (e.g., J23:J34)
+        for (let R = range.s.r; R <= range.e.r; ++R) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: range.s.c });
+          const cell = worksheet[cellAddress];
+          let value = (cell && cell.v !== undefined) ? cell.v : null;
+          if (item.dataType === 'decimal' && value !== null) {
+            value = parseFloat(value);
+            if (isNaN(value)) value = null;
+          }
+          values.push(value);
+        }
+        extractedData[item.fieldName] = JSON.stringify(values); // Store as JSON string
+      }
+      else { // Horizontal range (e.g., K6:AD6)
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const cellAddress = XLSX.utils.encode_cell({ r: range.s.r, c: C });
+          const cell = worksheet[cellAddress];
+          let value = (cell && cell.v !== undefined) ? cell.v : null;
+          if (item.dataType === 'decimal' && value !== null) {
+            value = parseFloat(value);
+            if (isNaN(value)) value = null;
+          }
+          values.push(value);
+        }
+        extractedData[item.fieldName] = JSON.stringify(values); // Store as JSON string
+      }
+    }
+
+    // 4. Store the structured data in the database
     await pool.query('DELETE FROM user_excel_data WHERE user_id = $1', [userId]);
 
+    const columns = Object.keys(extractedData).join(', ');
+    const placeholders = Object.keys(extractedData).map((_, i) => `$${i + 4}`).join(', '); // $1=userId, $2=fileName
+    const values = Object.values(extractedData);
+
+    const insertQuery = `INSERT INTO user_excel_data (user_id, file_name, ${columns}) VALUES ($1, $2, ${placeholders})`;
+
     await pool.query(
-      'INSERT INTO user_excel_data (user_id, file_name, sheet_data) VALUES ($1, $2, $3)',
-      [userId, fileName, JSON.stringify(jsonData)] // Store JSON as string, JSONB handles it
+      insertQuery,
+      [userId, fileName, ...values] 
     );
 
-    res.status(200).json({ message: 'Excel file uploaded and processed successfully!' });
+    res.status(200).json({ message: 'Excel file uploaded and processed successfully!', data: extractedData });
 
   } catch (error) {
     console.error('Error processing Excel upload:', error);
     // Provide a more specific error message based on common XLSX failures
     if (error.message.includes("Cannot read property 'SheetNames' of undefined") || error.message.includes("Unsupported shared string table") || error.message.includes("file is not a zip file")) {
-        return res.status(400).json({ message: 'Invalid Excel file format or corrupted file. Please upload a valid .xlsx or .xls file.' });
+      return res.status(400).json({ message: 'Invalid Excel file format or corrupted file. Please upload a valid .xlsx or .xls file.' });
     }
     res.status(500).json({ message: 'An internal server error occurred during Excel processing.' });
   } finally {
