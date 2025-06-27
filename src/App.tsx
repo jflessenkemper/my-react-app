@@ -31,6 +31,7 @@ export default function App() {
   const fileInputRef = useRef<HTMLInputElement>(null); // Ref for hidden file input
 
   const [selectedSource, setSelectedSource] = useState<string | null>(null);
+  const [showExcelUploadInterface, setShowExcelUploadInterface] = useState(false); // New state for Excel upload interface
 
   // Function to clear session data from local storage and state
   const clearSession = () => {
@@ -456,23 +457,79 @@ export default function App() {
                   <div className="flex flex-col sm:flex-row gap-4 mb-8">
                     {/* Excel */}
                     <div
-                      onClick={() => setSelectedSource('excel')}
+                      onClick={() => {
+                        setSelectedSource('excel');
+                        setShowExcelUploadInterface(true); // Show upload interface on click
+                      }}
                       className={`relative flex flex-col items-center justify-center w-80 h-80 glassmorphism rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'excel' ? 'border-white !border-r-white' : 'border-transparent'} hover:border-white p-6`}
                     >
-                      {/* Excel SVG (existing) */}
-                      <svg className="h-16 w-16 text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <rect x="3" y="4" width="18" height="16" rx="2" fill="#fff" stroke="#217346" strokeWidth="2" />
-                        <path d="M8 8l4 4-4 4" stroke="#217346" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        <text x="12" y="16" textAnchor="middle" fontSize="8" fill="#217346" fontWeight="bold">XLSX</text>
-                      </svg>
-                      <span className="mt-4 text-xl font-semibold">Excel File</span>
-                      <p className="text-gray-300 text-sm mt-2 text-center px-4">Upload your Excel files to analyze and visualize your data.</p>
-                      {selectedSource === 'excel' && (
-                        <button
-                          className={`absolute bottom-4 right-4 px-6 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg animated-button`}
+                      {/* Conditional content based on showExcelUploadInterface */}
+                      {selectedSource === 'excel' && showExcelUploadInterface ? (
+                        <div
+                          className="flex flex-col items-center justify-center w-full h-full border-2 border-dashed border-gray-600 rounded-lg p-4 text-center text-gray-400"
+                          onDrop={handleDrop}
+                          onDragOver={handleDragOver}
+                          onClick={() => fileInputRef.current?.click()} // Trigger hidden file input on click
                         >
-                          Connect
-                        </button>
+                          {excelFile ? (
+                            <>
+                              <p className="text-white mb-2">File selected: <span className="font-bold">{excelFile.name}</span></p>
+                              <div className="flex gap-4 mt-2">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent re-triggering file input
+                                    handleUploadExcel();
+                                  }}
+                                  className="px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg animated-button"
+                                >
+                                  {isUploading ? <div className="button-spinner"></div> : 'Upload File'}
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent re-triggering file input
+                                    setExcelFile(null);
+                                    setUploadError('');
+                                    setUploadSuccess(null);
+                                  }}
+                                  className="px-4 py-2 rounded-lg text-sm font-bold bg-gray-600 hover:bg-gray-700 transition-colors shadow-lg"
+                                >
+                                  Clear
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <p>Click to search for file or drag and drop XLSX file here</p>
+                          )}
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            accept=".xlsx, .xls"
+                            className="hidden"
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          {/* Excel SVG (existing) */}
+                          <svg className="h-16 w-16 text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <rect x="3" y="4" width="18" height="16" rx="2" fill="#fff" stroke="#217346" strokeWidth="2" />
+                            <path d="M8 8l4 4-4 4" stroke="#217346" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <text x="12" y="16" textAnchor="middle" fontSize="8" fill="#217346" fontWeight="bold">XLSX</text>
+                          </svg>
+                          <span className="mt-4 text-xl font-semibold">Excel File</span>
+                          <p className="text-gray-300 text-sm mt-2 text-center px-4">Upload your Excel files to analyze and visualize your data.</p>
+                          {selectedSource === 'excel' && !showExcelUploadInterface && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent re-triggering outer div click
+                                setShowExcelUploadInterface(true);
+                              }}
+                              className={`absolute bottom-4 right-4 px-6 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg animated-button`}
+                            >
+                              Upload
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
