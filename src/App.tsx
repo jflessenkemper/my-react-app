@@ -950,7 +950,7 @@ export default function App() {
                     </div>
                     <div className="text-sm">
                       <a href="#" className="font-medium text-gray-400 hover:text-gray-200"
-                         onClick={(e) => { e.preventDefault(); setShowPasswordResetRequestForm(true); clearFormStates(); }}>
+                         onClick={(e) => { e.preventDefault(); alert("Forgot password clicked!"); setShowPasswordResetRequestForm(true); clearFormStates(); }}>
                         Forgot your password?
                       </a>
                     </div>
