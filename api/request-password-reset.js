@@ -70,6 +70,6 @@ export default async function handler(req, res) {
     console.error('Database or server error during password reset request:', error);
     res.status(500).json({ message: 'An internal server error occurred.' });
   } finally {
-    await pool.end();
+    // Removed pool.end() as it can cause issues in serverless environments.
   }
 } 
