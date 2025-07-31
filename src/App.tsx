@@ -521,7 +521,8 @@ export default function App() {
       }
     } catch (err) {
       console.error('❌ Error fetching bank data:', err);
-      setError('Network error while fetching bank data');
+      const error = err as Error;
+      setError(`Network error while fetching bank data: ${error.message}`);
     } finally {
       setIsLoadingBankData(false);
       console.log('🏁 fetchBankData completed');
@@ -601,11 +602,12 @@ export default function App() {
 
     } catch (err) {
       console.error('❌ Bank connection error:', err);
+      const error = err as Error;
       console.error('❌ Error details:', {
-        message: err.message,
-        stack: err.stack
+        message: error.message,
+        stack: error.stack
       });
-      setError(`Failed to connect to bank: ${err.message}`);
+      setError(`Failed to connect to bank: ${error.message}`);
     } finally {
       console.log('🏁 Bank connection process completed');
       setIsConnecting(false);
@@ -857,7 +859,8 @@ export default function App() {
                                   console.log('🧪 Auth API error:', error);
                                 }
                               } catch (err) {
-                                console.error('🧪 Auth API exception:', err);
+                                const error = err as Error;
+                                console.error('🧪 Auth API exception:', error.message);
                               }
                             }}
                             className="px-4 py-2 rounded-lg text-sm font-bold bg-purple-600 hover:bg-purple-700 transition-colors"
