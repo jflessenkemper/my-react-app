@@ -489,7 +489,7 @@ export default function App() {
         <div className="flex h-screen w-screen overflow-hidden">
           <div className="flex flex-1 overflow-hidden glassmorphism-dashboard-container"> {/* Apply glassmorphism to the entire dashboard area, with no padding on this container */}
             {/* Left Sidebar / Mobile Bottom Bar */}
-            <aside className="flex flex-row w-full h-auto fixed bottom-0 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800/50 custom-scrollbar glassmorphism glass-shimmer-on-hover flex-grow-0 flex-shrink-0 justify-center items-center gap-x-4 z-50 rounded-none border-t border-gray-700/50
+            <aside className="flex flex-row w-full h-auto fixed bottom-0 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-800/50 custom-scrollbar glassmorphism flex-grow-0 flex-shrink-0 justify-center items-center gap-x-4 z-50 rounded-none border-t border-gray-700/50
                lg:flex-col lg:h-screen lg:static lg:bottom-auto lg:left-auto lg:translate-x-0 lg:px-4 lg:py-6 lg:items-start lg:justify-start lg:gap-y-2 lg:w-fit lg:max-w-[95vw] lg:border-r-4 lg:border-gray-700/50">
 
               {/* Navigation Links - Desktop */}
@@ -498,7 +498,7 @@ export default function App() {
                   <li>
                     <button
                       onClick={() => setActiveTab('excel')}
-                      className={`flex items-center w-16 h-16 p-1 transition-colors ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'} justify-center items-center rounded-lg`}
+                      className={`flex items-center w-16 h-16 p-1 ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'bg-gray-800/50 text-gray-300'} justify-center items-center rounded-lg`}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -511,7 +511,7 @@ export default function App() {
                       className={`flex items-center w-16 h-16 p-1 transition-colors justify-center items-center rounded-lg ${
                         isLogoutLoading
                           ? 'bg-gray-600 cursor-not-allowed text-gray-400'
-                          : 'text-gray-300 bg-gray-800/50 hover:bg-gray-700/50'
+                          : 'text-red-300 bg-red-500/20 hover:bg-red-500/30 active:outline active:outline-2 active:outline-red-300/60'
                       }`}
                       disabled={isLogoutLoading}
                     >
@@ -534,7 +534,7 @@ export default function App() {
                   className={`flex flex-col items-center w-24 h-24 p-1 transition-colors justify-center items-center rounded-lg ${
                     isLogoutLoading
                       ? 'bg-gray-600 cursor-not-allowed text-gray-400'
-                      : 'text-gray-300 bg-gray-800/50 hover:bg-gray-700/50'
+                      : 'text-red-300 bg-red-500/20 hover:bg-red-500/30 active:outline active:outline-2 active:outline-red-300/60'
                   }`}
                   disabled={isLogoutLoading}
                 >
@@ -548,7 +548,7 @@ export default function App() {
                 </button>
                 <button
                   onClick={() => setActiveTab('excel')}
-                  className={`flex flex-col items-center w-24 h-24 p-1 transition-colors ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700/50'} justify-center items-center rounded-lg`}
+                  className={`flex flex-col items-center w-24 h-24 p-1 ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'bg-gray-800/50 text-gray-300'} justify-center items-center rounded-lg`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -563,13 +563,7 @@ export default function App() {
               {/* Conditional rendering for content based on activeTab */}
               {activeTab === 'excel' && (
                 <div className="w-full max-w-4xl text-gray-100 lg:pl-8">
-                  <h2 className="text-4xl font-bold mb-6 text-left">Dashboard</h2>
-                  <div className="flex flex-col">
-                    <div className="p-8 glassmorphism rounded-xl text-center">
-                      <h3 className="text-2xl font-semibold mb-4">Welcome to your Dashboard</h3>
-                      <p className="text-gray-300">Your dashboard content will appear here.</p>
-                    </div>
-                  </div>
+                  {/* Empty dashboard content */}
                 </div>
               )}
             </main>
@@ -588,7 +582,7 @@ export default function App() {
               <h1 key={showRegisterForm ? "register-title" : (showPasswordResetRequestForm ? "request-reset-title" : (showPasswordResetForm ? "reset-password-title" : "login-title"))}
                   className={`text-3xl font-bold text-fade-in-out text-gray-100`}>
                 {showPasswordResetRequestForm
-                  ? 'Request Password Reset'
+                  ? 'Password Reset'
                   : showPasswordResetForm
                   ? 'Reset Your Password'
                   : showRegisterForm
