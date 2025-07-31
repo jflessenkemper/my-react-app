@@ -5,7 +5,7 @@ export default function Home() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [basiqUserId, setBasiqUserId] = useState<string | null>(null);
-  const [bankData, setBankData] = useState<unknown>(null);
+  const [bankData, setBankData] = useState<any>(null);
   const [isLoadingBankData, setIsLoadingBankData] = useState(false);
 
   // Complete Basiq integration flow
