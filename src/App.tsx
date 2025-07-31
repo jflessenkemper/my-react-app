@@ -489,8 +489,12 @@ export default function App() {
 
   // Function to fetch bank data from Basiq
   const fetchBankData = async (userId: string, accessToken: string) => {
+    console.log('🔄 Starting fetchBankData...');
+    console.log('📋 Parameters:', { userId, accessToken: accessToken ? 'Present' : 'Missing' });
+
     setIsLoadingBankData(true);
     try {
+      console.log('🌐 Making request to /api/basiq-transactions...');
       const response = await fetch(`/api/basiq-transactions?basiqUserId=${userId}`, {
         method: 'GET',
         headers: {
@@ -499,38 +503,63 @@ export default function App() {
         }
       });
 
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+
       if (response.ok) {
+        console.log('✅ Response OK, parsing JSON...');
         const data = await response.json();
+        console.log('📊 Bank data received:', data);
         setBankData(data);
         setSuccessMessage('Bank data loaded successfully!');
+        console.log('✅ Bank data set successfully');
+      } else {
+        console.error('❌ Response not OK');
+        const errorText = await response.text();
+        console.error('❌ Error response:', errorText);
+        setError(`Failed to fetch bank data: ${response.status}`);
       }
     } catch (err) {
-      console.error('Error fetching bank data:', err);
+      console.error('❌ Error fetching bank data:', err);
+      setError('Network error while fetching bank data');
     } finally {
       setIsLoadingBankData(false);
+      console.log('🏁 fetchBankData completed');
     }
   };
 
   // Function to handle bank connection via Basiq API
   const handleBankConnection = async () => {
+    console.log('🚀 Starting bank connection process...');
+    console.log('👤 Logged in user email:', loggedInUserEmail);
+    console.log('🔑 Session ID:', localStorage.getItem('sessionId'));
+
     setIsConnecting(true);
     setError(null);
     setSuccessMessage(null);
 
     try {
       // Step 1: Get Basiq auth token
+      console.log('🔐 Step 1: Getting Basiq auth token...');
       const authResponse = await fetch('/api/basiq-auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
 
+      console.log('🔐 Auth response status:', authResponse.status);
+      console.log('🔐 Auth response ok:', authResponse.ok);
+
       if (!authResponse.ok) {
-        throw new Error('Failed to authenticate with Basiq');
+        const errorText = await authResponse.text();
+        console.error('❌ Auth failed:', errorText);
+        throw new Error(`Failed to authenticate with Basiq: ${authResponse.status}`);
       }
 
       const authData = await authResponse.json();
+      console.log('✅ Auth successful, token received:', authData.access_token ? 'Present' : 'Missing');
 
       // Step 2: Create Basiq user and auth link
+      console.log('👤 Step 2: Creating Basiq user and connection...');
       const connectionResponse = await fetch('/api/basiq-connect', {
         method: 'POST',
         headers: {
@@ -543,28 +572,42 @@ export default function App() {
         }),
       });
 
+      console.log('👤 Connection response status:', connectionResponse.status);
+      console.log('👤 Connection response ok:', connectionResponse.ok);
+
       if (!connectionResponse.ok) {
-        throw new Error('Failed to create bank connection');
+        const errorText = await connectionResponse.text();
+        console.error('❌ Connection failed:', errorText);
+        throw new Error(`Failed to create bank connection: ${connectionResponse.status}`);
       }
 
       const connectionData = await connectionResponse.json();
+      console.log('✅ Connection successful:', connectionData);
 
       // Store the Basiq user ID for later use
       setBasiqUserId(connectionData.basiqUserId);
+      console.log('💾 Stored Basiq user ID:', connectionData.basiqUserId);
 
       // Step 3: For demo purposes, simulate connection with Hooli test bank
-      // In production, this would open the auth link for user to complete
+      console.log('🏦 Step 3: Connecting to Hooli test bank...');
       setSuccessMessage('Connecting to Hooli test bank...');
 
       // Wait a moment then fetch demo data
+      console.log('⏳ Waiting 2 seconds before fetching data...');
       setTimeout(async () => {
+        console.log('📊 Now fetching bank data...');
         await fetchBankData(connectionData.basiqUserId, authData.access_token);
       }, 2000);
 
     } catch (err) {
-      console.error('Error connecting to bank:', err);
-      setError('Failed to connect to bank. Please try again.');
+      console.error('❌ Bank connection error:', err);
+      console.error('❌ Error details:', {
+        message: err.message,
+        stack: err.stack
+      });
+      setError(`Failed to connect to bank: ${err.message}`);
     } finally {
+      console.log('🏁 Bank connection process completed');
       setIsConnecting(false);
     }
   };
@@ -767,7 +810,7 @@ export default function App() {
                         )}
 
                         {/* Refresh Button */}
-                        <div className="flex justify-center">
+                        <div className="flex justify-center gap-4">
                           <button
                             onClick={() => basiqUserId && fetchBankData(basiqUserId, '')}
                             className={`px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${
@@ -778,6 +821,48 @@ export default function App() {
                             disabled={isLoadingBankData}
                           >
                             {isLoadingBankData ? <div className="button-spinner"></div> : 'Refresh Data'}
+                          </button>
+
+                          {/* Debug Button */}
+                          <button
+                            onClick={() => {
+                              console.log('🔍 DEBUG INFO:');
+                              console.log('- Logged in user:', loggedInUserEmail);
+                              console.log('- Session ID:', localStorage.getItem('sessionId'));
+                              console.log('- Basiq User ID:', basiqUserId);
+                              console.log('- Bank Data:', bankData);
+                              console.log('- Is Connecting:', isConnecting);
+                              console.log('- Is Loading Bank Data:', isLoadingBankData);
+                            }}
+                            className="px-4 py-2 rounded-lg text-sm font-bold bg-gray-600 hover:bg-gray-700 transition-colors"
+                          >
+                            Debug Info
+                          </button>
+
+                          {/* Test API Button */}
+                          <button
+                            onClick={async () => {
+                              console.log('🧪 Testing API endpoints...');
+                              try {
+                                const response = await fetch('/api/basiq-auth', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' }
+                                });
+                                console.log('🧪 Auth API response:', response.status, response.ok);
+                                if (response.ok) {
+                                  const data = await response.json();
+                                  console.log('🧪 Auth API data:', data);
+                                } else {
+                                  const error = await response.text();
+                                  console.log('🧪 Auth API error:', error);
+                                }
+                              } catch (err) {
+                                console.error('🧪 Auth API exception:', err);
+                              }
+                            }}
+                            className="px-4 py-2 rounded-lg text-sm font-bold bg-purple-600 hover:bg-purple-700 transition-colors"
+                          >
+                            Test API
                           </button>
                         </div>
                       </div>
