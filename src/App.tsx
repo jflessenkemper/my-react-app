@@ -569,9 +569,7 @@ export default function App() {
                       <h3 className="text-2xl font-semibold mb-4">Welcome to your Dashboard</h3>
                       <p className="text-gray-300">Your dashboard content will appear here.</p>
                     </div>
-
-
-
+                  </div>
                 </div>
               )}
             </main>
