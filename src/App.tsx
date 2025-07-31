@@ -29,6 +29,11 @@ export default function App() {
   const [showRegisterForm, setShowRegisterForm] = useState(false);
   const [isSignInLoading, setIsSignInLoading] = useState(false); // Loading state for sign-in button
   const [isLogoutLoading, setIsLogoutLoading] = useState(false); // Loading state for logout button
+  const [isBankBoxSelected, setIsBankBoxSelected] = useState(false); // State for bank connection box selection
+  const [isConnecting, setIsConnecting] = useState(false); // State for bank connection loading
+  const [basiqUserId, setBasiqUserId] = useState<string | null>(null); // Store Basiq user ID
+  const [bankData, setBankData] = useState<any>(null); // Store bank account and transaction data
+  const [isLoadingBankData, setIsLoadingBankData] = useState(false); // Loading state for bank data
   const [emailError, setEmailError] = useState(false); // New state for email validation error
   const [passwordError, setPasswordError] = useState(false); // New state for password validation error
 
@@ -482,6 +487,88 @@ export default function App() {
     setExcelData(null);
   };
 
+  // Function to fetch bank data from Basiq
+  const fetchBankData = async (userId: string, accessToken: string) => {
+    setIsLoadingBankData(true);
+    try {
+      const response = await fetch(`/api/basiq-transactions?basiqUserId=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBankData(data);
+        setSuccessMessage('Bank data loaded successfully!');
+      }
+    } catch (err) {
+      console.error('Error fetching bank data:', err);
+    } finally {
+      setIsLoadingBankData(false);
+    }
+  };
+
+  // Function to handle bank connection via Basiq API
+  const handleBankConnection = async () => {
+    setIsConnecting(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      // Step 1: Get Basiq auth token
+      const authResponse = await fetch('/api/basiq-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!authResponse.ok) {
+        throw new Error('Failed to authenticate with Basiq');
+      }
+
+      const authData = await authResponse.json();
+
+      // Step 2: Create Basiq user and auth link
+      const connectionResponse = await fetch('/api/basiq-connect', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authData.access_token}`
+        },
+        body: JSON.stringify({
+          userEmail: loggedInUserEmail,
+          sessionId: localStorage.getItem('sessionId')
+        }),
+      });
+
+      if (!connectionResponse.ok) {
+        throw new Error('Failed to create bank connection');
+      }
+
+      const connectionData = await connectionResponse.json();
+
+      // Store the Basiq user ID for later use
+      setBasiqUserId(connectionData.basiqUserId);
+
+      // Step 3: For demo purposes, simulate connection with Hooli test bank
+      // In production, this would open the auth link for user to complete
+      setSuccessMessage('Connecting to Hooli test bank...');
+
+      // Wait a moment then fetch demo data
+      setTimeout(async () => {
+        await fetchBankData(connectionData.basiqUserId, authData.access_token);
+      }, 2000);
+
+    } catch (err) {
+      console.error('Error connecting to bank:', err);
+      setError('Failed to connect to bank. Please try again.');
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
   return (
     <>
       {isLoggedIn ? (
@@ -498,7 +585,7 @@ export default function App() {
                   <li>
                     <button
                       onClick={() => setActiveTab('excel')}
-                      className={`flex items-center w-16 h-16 p-1 ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'bg-gray-800/50 text-gray-300'} justify-center items-center rounded-lg`}
+                      className={`flex items-center w-16 h-16 p-1 ${activeTab === 'excel' ? 'bg-gray-700/50 text-white outline outline-2 outline-gray-400/60' : 'bg-gray-800/50 text-gray-300'} justify-center items-center rounded-lg`}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -548,7 +635,7 @@ export default function App() {
                 </button>
                 <button
                   onClick={() => setActiveTab('excel')}
-                  className={`flex flex-col items-center w-24 h-24 p-1 ${activeTab === 'excel' ? 'bg-blue-600/50 text-white' : 'bg-gray-800/50 text-gray-300'} justify-center items-center rounded-lg`}
+                  className={`flex flex-col items-center w-24 h-24 p-1 ${activeTab === 'excel' ? 'bg-gray-700/50 text-white outline outline-2 outline-gray-400/60' : 'bg-gray-800/50 text-gray-300'} justify-center items-center rounded-lg`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -563,7 +650,139 @@ export default function App() {
               {/* Conditional rendering for content based on activeTab */}
               {activeTab === 'excel' && (
                 <div className="w-full max-w-4xl text-gray-100 lg:pl-8">
-                  {/* Empty dashboard content */}
+                  {/* Bank Connection Box */}
+                  <div className="flex flex-col gap-6">
+                    {!bankData ? (
+                      <div
+                        onClick={() => setIsBankBoxSelected(!isBankBoxSelected)}
+                        className={`relative flex flex-col items-center justify-center w-full h-64 glassmorphism rounded-xl cursor-pointer transition-all border-2 p-8 ${
+                          isBankBoxSelected
+                            ? 'border-white/60'
+                            : 'border-transparent hover:border-white/30'
+                        }`}
+                      >
+                        {/* Bank Icon */}
+                        <svg
+                          className="h-16 w-16 text-blue-400 mb-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+
+                        {/* Text Content */}
+                        <h3 className="text-xl font-semibold mb-2 text-center">Connect Securely to a Bank Account</h3>
+                        <p className="text-gray-300 text-sm text-center max-w-md">
+                          Securely link your bank account to access your financial data and insights.
+                        </p>
+
+                        {/* Connect Button - Only shows when box is selected */}
+                        {isBankBoxSelected && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent triggering the box click
+                              handleBankConnection();
+                            }}
+                            className={`absolute bottom-4 right-4 px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900 ${
+                              isConnecting
+                                ? 'bg-gray-600 cursor-not-allowed'
+                                : 'animated-button text-gray-900 hover:text-gray-900'
+                            }`}
+                            disabled={isConnecting}
+                          >
+                            {isConnecting ? <div className="button-spinner"></div> : 'Connect'}
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      /* Bank Data Display */
+                      <div className="space-y-6">
+                        {/* Account Summary */}
+                        <div className="glassmorphism rounded-xl p-6">
+                          <h3 className="text-2xl font-bold mb-4 text-white">Bank Account Summary</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div className="bg-blue-500/20 rounded-lg p-4">
+                              <h4 className="text-sm text-gray-300">Total Accounts</h4>
+                              <p className="text-2xl font-bold text-white">{bankData.summary?.totalAccounts || 0}</p>
+                            </div>
+                            <div className="bg-green-500/20 rounded-lg p-4">
+                              <h4 className="text-sm text-gray-300">Total Transactions</h4>
+                              <p className="text-2xl font-bold text-white">{bankData.summary?.totalTransactions || 0}</p>
+                            </div>
+                            <div className="bg-purple-500/20 rounded-lg p-4">
+                              <h4 className="text-sm text-gray-300">Connected Banks</h4>
+                              <p className="text-2xl font-bold text-white">{bankData.summary?.totalConnections || 0}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Accounts List */}
+                        {bankData.accounts && bankData.accounts.length > 0 && (
+                          <div className="glassmorphism rounded-xl p-6">
+                            <h4 className="text-xl font-bold mb-4 text-white">Accounts</h4>
+                            <div className="space-y-3">
+                              {bankData.accounts.slice(0, 5).map((account: any, index: number) => (
+                                <div key={index} className="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg">
+                                  <div>
+                                    <p className="font-semibold text-white">{account.name || 'Account'}</p>
+                                    <p className="text-sm text-gray-300">{account.accountNo || account.id}</p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-bold text-white">
+                                      ${account.balance ? parseFloat(account.balance).toFixed(2) : '0.00'}
+                                    </p>
+                                    <p className="text-sm text-gray-300">{account.type || 'Unknown'}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Recent Transactions */}
+                        {bankData.transactions && bankData.transactions.length > 0 && (
+                          <div className="glassmorphism rounded-xl p-6">
+                            <h4 className="text-xl font-bold mb-4 text-white">Recent Transactions</h4>
+                            <div className="space-y-3">
+                              {bankData.transactions.slice(0, 10).map((transaction: any, index: number) => (
+                                <div key={index} className="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg">
+                                  <div>
+                                    <p className="font-semibold text-white">{transaction.description || 'Transaction'}</p>
+                                    <p className="text-sm text-gray-300">
+                                      {transaction.postDate ? new Date(transaction.postDate).toLocaleDateString() : 'Unknown date'}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className={`font-bold ${parseFloat(transaction.amount) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                      {parseFloat(transaction.amount) >= 0 ? '+' : ''}${Math.abs(parseFloat(transaction.amount)).toFixed(2)}
+                                    </p>
+                                    <p className="text-sm text-gray-300">{transaction.class || 'Unknown'}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Refresh Button */}
+                        <div className="flex justify-center">
+                          <button
+                            onClick={() => basiqUserId && fetchBankData(basiqUserId, '')}
+                            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${
+                              isLoadingBankData
+                                ? 'bg-gray-600 cursor-not-allowed'
+                                : 'animated-button text-gray-900 hover:text-gray-900'
+                            }`}
+                            disabled={isLoadingBankData}
+                          >
+                            {isLoadingBankData ? <div className="button-spinner"></div> : 'Refresh Data'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </main>
