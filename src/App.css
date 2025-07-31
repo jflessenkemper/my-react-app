@@ -48,7 +48,6 @@
   box-shadow: none; /* Explicitly removed as requested */
   backdrop-filter: blur(12px); /* Blur effect */
   -webkit-backdrop-filter: blur(12px); /* For Safari compatibility */
-  border-right: 2px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
 }
 
 /* NEW: Glassmorphism for the entire dashboard container (main app area when logged in) */

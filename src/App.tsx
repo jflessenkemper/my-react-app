@@ -27,7 +27,8 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInUserEmail, setLoggedInUserEmail] = useState<string | null>(null);
   const [showRegisterForm, setShowRegisterForm] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // New state for global loading indicator (for login/register/initial Excel fetch)
+  const [isSignInLoading, setIsSignInLoading] = useState(false); // Loading state for sign-in button
+  const [isLogoutLoading, setIsLogoutLoading] = useState(false); // Loading state for logout button
   const [emailError, setEmailError] = useState(false); // New state for email validation error
   const [passwordError, setPasswordError] = useState(false); // New state for password validation error
 
@@ -122,12 +123,12 @@ export default function App() {
       if (activeTab === 'excel' && isLoggedIn) {
         setUploadError('');
         setUploadSuccess('');
-        setIsLoading(true); // Use global loading for fetching Excel data
+        // Remove global loading for Excel data fetching
         const sessionId = localStorage.getItem('sessionId');
 
         if (!sessionId) {
           setError('Session not found. Please log in again.');
-          setIsLoading(false);
+          // Remove global loading state
           return;
         }
 
@@ -154,7 +155,7 @@ export default function App() {
           setUploadError('Network error fetching Excel data.');
           setExcelData(null);
         } finally {
-          setIsLoading(false);
+          // Remove global loading state
         }
       } else {
         // Clear Excel data if not on Excel tab or not logged in
@@ -202,7 +203,7 @@ export default function App() {
       return; // Stop form submission if there are errors
     }
 
-    setIsLoading(true);
+    setIsSignInLoading(true);
     setError(null);
     setSuccessMessage(null);
 
@@ -229,7 +230,7 @@ export default function App() {
       setError('A network error occurred. Please try again.');
       setIsLoggedIn(false);
     } finally {
-      setIsLoading(false); // End global loading
+      setIsSignInLoading(false); // End sign-in loading
     }
   };
 
@@ -250,7 +251,7 @@ export default function App() {
       return; // Stop form submission if there are errors
     }
 
-    setIsLoading(true);
+    setIsSignInLoading(true);
     setError(null);
     setSuccessMessage(null);
 
@@ -274,13 +275,13 @@ export default function App() {
       console.error('Network error during registration:', err);
       setError('A network error occurred during registration. Please try again.');
     } finally {
-      setIsLoading(false); // End global loading
+      setIsSignInLoading(false); // End sign-in loading
     }
   };
 
   const handleRequestPasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsSignInLoading(true);
     setError(null);
     setSuccessMessage(null);
 
@@ -304,7 +305,7 @@ export default function App() {
       console.error('Network error during password reset request:', err);
       setError('A network error occurred. Please try again.');
     } finally {
-      setIsLoading(false);
+      setIsSignInLoading(false);
     }
   };
 
@@ -316,7 +317,7 @@ export default function App() {
       return;
     }
 
-    setIsLoading(true);
+    setIsSignInLoading(true);
     setError(null);
     setSuccessMessage(null);
 
@@ -341,12 +342,12 @@ export default function App() {
       console.error('Network error during password reset:', err);
       setError('A network error occurred. Please try again.');
     } finally {
-      setIsLoading(false);
+      setIsSignInLoading(false);
     }
   };
 
   const handleLogout = async (sessionIdToClear?: string) => {
-    setIsLoading(true); // Start loading for logout
+    setIsLogoutLoading(true); // Start loading for logout
     setError(null);
     setSuccessMessage(null);
     const currentSessionId = sessionIdToClear || localStorage.getItem('sessionId');
@@ -354,7 +355,7 @@ export default function App() {
     if (!currentSessionId) {
       console.log('No session to clear on server. Clearing local state only.');
       clearSession();
-      setIsLoading(false);
+      setIsLogoutLoading(false);
       return;
     }
 
@@ -378,7 +379,7 @@ export default function App() {
       console.error('Network error during logout:', err);
       setError('A network error occurred during logout. Please try again.');
     } finally {
-      setIsLoading(false); // End global loading
+      setIsLogoutLoading(false); // End logout loading
     }
   };
 
@@ -483,12 +484,6 @@ export default function App() {
 
   return (
     <>
-      {isLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="button-spinner"></div>
-        </div>
-      )}
-
       {isLoggedIn ? (
         // Main container for the entire application, spaced from edges and rounded
         <div className="flex h-screen w-screen overflow-hidden">
@@ -513,11 +508,20 @@ export default function App() {
                   <li>
                     <button
                       onClick={() => handleLogout()}
-                      className="flex items-center w-16 h-16 p-1 transition-colors text-gray-300 bg-gray-800/50 hover:bg-gray-700/50 justify-center items-center rounded-lg"
+                      className={`flex items-center w-16 h-16 p-1 transition-colors justify-center items-center rounded-lg ${
+                        isLogoutLoading
+                          ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                          : 'text-gray-300 bg-gray-800/50 hover:bg-gray-700/50'
+                      }`}
+                      disabled={isLogoutLoading}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
+                      {isLogoutLoading ? (
+                        <div className="button-spinner"></div>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                      )}
                     </button>
                   </li>
                 </ul>
@@ -527,11 +531,20 @@ export default function App() {
               <nav className="flex lg:hidden w-full justify-between items-center">
                 <button
                   onClick={() => handleLogout()}
-                  className="flex flex-col items-center w-24 h-24 p-1 transition-colors text-gray-300 bg-gray-800/50 hover:bg-gray-700/50 justify-center items-center rounded-lg"
+                  className={`flex flex-col items-center w-24 h-24 p-1 transition-colors justify-center items-center rounded-lg ${
+                    isLogoutLoading
+                      ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                      : 'text-gray-300 bg-gray-800/50 hover:bg-gray-700/50'
+                  }`}
+                  disabled={isLogoutLoading}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
+                  {isLogoutLoading ? (
+                    <div className="button-spinner"></div>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  )}
                 </button>
                 <button
                   onClick={() => setActiveTab('excel')}
@@ -550,180 +563,15 @@ export default function App() {
               {/* Conditional rendering for content based on activeTab */}
               {activeTab === 'excel' && (
                 <div className="w-full max-w-4xl text-gray-100 lg:pl-8">
-                  <h2 className="text-4xl font-bold mb-6 text-left">Connect to an App</h2>
-                  {/* New source selection UI */}
+                  <h2 className="text-4xl font-bold mb-6 text-left">Dashboard</h2>
                   <div className="flex flex-col">
-                    <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                      {/* Excel */}
-                      <div
-                        onClick={() => {
-                          setSelectedSource('excel');
-                          setShowExcelUploadInterface(true); // Show upload interface on click
-                        }}
-                        className={`relative flex flex-col items-center justify-center w-80 h-80 glassmorphism rounded-xl cursor-pointer transition-all border-2 ${selectedSource === 'excel' ? 'border-white !border-r-white' : 'border-transparent'} hover:border-white p-6`}
-                      >
-                        {/* Conditional content based on showExcelUploadInterface */}
-                        {selectedSource === 'excel' && showExcelUploadInterface ? (
-                          <div
-                            className="flex flex-col items-center justify-center w-full h-full border-2 border-dashed border-gray-600 rounded-lg p-4 text-center text-gray-400"
-                            onDrop={handleDrop}
-                            onDragOver={handleDragOver}
-                            onClick={() => fileInputRef.current?.click()} // Trigger hidden file input on click
-                          >
-                            {excelFile ? (
-                              <>
-                                <p className="text-white mb-2">File selected: <span className="font-bold">{excelFile.name}</span></p>
-                                <div className="flex gap-4 mt-2">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation(); // Prevent re-triggering file input
-                                      handleUploadExcel();
-                                    }}
-                                    className="px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg animated-button"
-                                  >
-                                    {isUploading ? <div className="button-spinner"></div> : 'Upload File'}
-                                  </button>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation(); // Prevent re-triggering file input
-                                      setExcelFile(null);
-                                      setUploadError('');
-                                      setUploadSuccess(null);
-                                    }}
-                                    className="px-4 py-2 rounded-lg text-sm font-bold bg-gray-600 hover:bg-gray-700 transition-colors shadow-lg"
-                                  >
-                                    Clear
-                                  </button>
-                                </div>
-                              </>
-                            ) : (
-                              <p>Click to search for file or drag and drop XLSX file here</p>
-                            )}
-                            <input
-                              type="file"
-                              ref={fileInputRef}
-                              onChange={handleFileChange}
-                              accept=".xlsx, .xls"
-                              className="hidden"
-                            />
-                          </div>
-                        ) : (
-                          <>
-                            {/* Excel SVG (existing) */}
-                            <svg className="h-16 w-16 text-green-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                              <rect x="3" y="4" width="18" height="16" rx="2" fill="#fff" stroke="#217346" strokeWidth="2" />
-                              <path d="M8 8l4 4-4 4" stroke="#217346" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                              <text x="12" y="16" textAnchor="middle" fontSize="8" fill="#217346" fontWeight="bold">XLSX</text>
-                            </svg>
-                            <span className="mt-4 text-xl font-semibold">Excel File</span>
-                            <p className="text-gray-300 text-sm mt-2 text-center px-4">Upload your Excel files to analyze and visualize your data.</p>
-                            {selectedSource === 'excel' && !showExcelUploadInterface && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation(); // Prevent re-triggering outer div click
-                                  setShowExcelUploadInterface(true);
-                                }}
-                                className={`absolute bottom-4 right-4 px-6 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg animated-button`}
-                              >
-                                Upload
-                              </button>
-                            )}
-                          </>
-                        )}
-                      </div>
+                    <div className="p-8 glassmorphism rounded-xl text-center">
+                      <h3 className="text-2xl font-semibold mb-4">Welcome to your Dashboard</h3>
+                      <p className="text-gray-300">Your dashboard content will appear here.</p>
                     </div>
-                  </div>
 
-                  {excelData && (
-                    <div className="mt-8 p-6 glassmorphism rounded-xl text-gray-100">
-                      <h3 className="text-2xl font-bold mb-4">Overview Data</h3>
 
-                      {/* Time Intervals (Headers) */}
-                      {excelData.frequency_interval && excelData.frequency_interval.length > 0 && (
-                        <div className="flex items-center space-x-4 mb-4 text-gray-300">
-                          <span className="font-semibold w-36 text-right">Intervals:</span>
-                          <div className="flex flex-wrap gap-x-4">
-                            {excelData.frequency_interval.map((interval, index) => (
-                              <span key={index} className="font-medium">{interval}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
 
-                      {/* Income Section */}
-                      <h4 className="text-xl font-bold mt-6 mb-3">Income</h4>
-                      {excelData.income_source_1 && excelData.income_source_1_values && (
-                        <div className="flex items-center space-x-4 mb-2">
-                          <span className="font-semibold w-36 text-right">{excelData.income_source_1}:</span>
-                          <div className="flex flex-wrap gap-x-4">
-                            {excelData.income_source_1_values.map((value, index) => (
-                              <span key={index}>{value !== null ? value.toFixed(2) : '-'}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {excelData.income_source_2 && excelData.income_source_2_values && (
-                        <div className="flex items-center space-x-4 mb-2">
-                          <span className="font-semibold w-36 text-right">{excelData.income_source_2}:</span>
-                          <div className="flex flex-wrap gap-x-4">
-                            {excelData.income_source_2_values.map((value, index) => (
-                              <span key={index}>{value !== null ? value.toFixed(2) : '-'}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {excelData.income_total_label && excelData.income_totals && (
-                        <div className="flex items-center space-x-4 font-bold mt-4 border-t border-gray-700 pt-2">
-                          <span className="font-semibold w-36 text-right">{excelData.income_total_label}:</span>
-                          <div className="flex flex-wrap gap-x-4">
-                            {excelData.income_totals.map((value, index) => (
-                              <span key={index}>{value !== null ? value.toFixed(2) : '-'}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Expense Section */}
-                      <h4 className="text-xl font-bold mt-6 mb-3">Expenses</h4>
-                      {excelData.expense_categories && excelData.expense_values && (
-                        <div>
-                          {excelData.expense_categories.map((category, rowIndex) => (
-                            <div key={rowIndex} className="flex items-center space-x-4 mb-2">
-                              <span className="font-semibold w-36 text-right">{category}:</span>
-                              <div className="flex flex-wrap gap-x-4">
-                                {excelData.expense_values[rowIndex] && excelData.expense_values[rowIndex].map((value, colIndex) => (
-                                  <span key={colIndex}>{value !== null ? value.toFixed(2) : '-'}</span>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {excelData.expense_total_label && excelData.expense_totals && (
-                        <div className="flex items-center space-x-4 font-bold mt-4 border-t border-gray-700 pt-2">
-                          <span className="font-semibold w-36 text-right">{excelData.expense_total_label}:</span>
-                          <div className="flex flex-wrap gap-x-4">
-                            {excelData.expense_totals.map((value, index) => (
-                              <span key={index}>{value !== null ? value.toFixed(2) : '-'}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Profit/Loss Section */}
-                      <h4 className="text-xl font-bold mt-6 mb-3">Profit/Loss</h4>
-                      {excelData.profit_loss_label && excelData.profit_loss_values && (
-                        <div className="flex items-center space-x-4 mb-2">
-                          <span className="font-semibold w-36 text-right">{excelData.profit_loss_label}:</span>
-                          <div className="flex flex-wrap gap-x-4">
-                            {excelData.profit_loss_values.map((value, index) => (
-                              <span key={index}>{value !== null ? value.toFixed(2) : '-'}</span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               )}
             </main>
@@ -791,7 +639,7 @@ export default function App() {
                     placeholder="Email Address"
                     required
                     onFocus={() => setEmailError(false)}
-                    disabled={isLoading}
+                    disabled={isSignInLoading}
                   />
                 </div>
                 {/* Submit Button */}
@@ -799,13 +647,13 @@ export default function App() {
                   <button
                     type="submit"
                     className={`w-full flex justify-center py-3 px-4 rounded-lg shadow-sm text-sm font-bold text-gray-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900 ${
-                      isLoading
+                      isSignInLoading
                         ? 'bg-gray-600 cursor-not-allowed'
                         : 'animated-button text-gray-900 hover:text-gray-900'
                     }`}
-                    disabled={isLoading}
+                    disabled={isSignInLoading}
                   >
-                    {isLoading ? <div className="button-spinner"></div> : 'Send Reset Code'}
+                    {isSignInLoading ? <div className="button-spinner"></div> : 'Send Reset Code'}
                   </button>
                 </div>
               </form>
@@ -827,7 +675,7 @@ export default function App() {
                     placeholder="Email Address"
                     required
                     onFocus={() => setEmailError(false)}
-                    disabled={isLoading || true} // Make it effectively read-only during reset
+                    disabled={isSignInLoading || true} // Make it effectively read-only during reset
                   />
                 </div>
                 {/* Reset Code Input */}
@@ -844,7 +692,7 @@ export default function App() {
                     className="w-full pl-10 pr-4 py-3 bg-neutral-700/50 text-gray-200 border border-neutral-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300"
                     placeholder="6-digit Reset Code (valid for 10 min)"
                     required
-                    disabled={isLoading}
+                    disabled={isSignInLoading}
                   />
                 </div>
                 {/* New Password Input */}
@@ -862,7 +710,7 @@ export default function App() {
                     placeholder="New Password"
                     required
                     onFocus={() => setPasswordError(false)}
-                    disabled={isLoading}
+                    disabled={isSignInLoading}
                   />
                 </div>
                 {/* Confirm New Password Input */}
@@ -880,7 +728,7 @@ export default function App() {
                     placeholder="Confirm New Password"
                     required
                     onFocus={() => setPasswordError(false)}
-                    disabled={isLoading}
+                    disabled={isSignInLoading}
                   />
                 </div>
                 {/* Submit Button */}
@@ -888,13 +736,13 @@ export default function App() {
                   <button
                     type="submit"
                     className={`w-full flex justify-center py-3 px-4 rounded-lg shadow-sm text-sm font-bold text-gray-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900 ${
-                      isLoading
+                      isSignInLoading
                         ? 'bg-gray-600 cursor-not-allowed'
                         : 'animated-button text-gray-900 hover:text-gray-900'
                     }`}
-                    disabled={isLoading}
+                    disabled={isSignInLoading}
                   >
-                    {isLoading ? <div className="button-spinner"></div> : 'Reset Password'}
+                    {isSignInLoading ? <div className="button-spinner"></div> : 'Reset Password'}
                   </button>
                 </div>
               </form>
@@ -916,7 +764,7 @@ export default function App() {
                     placeholder="Email Address"
                     required
                     onFocus={() => setEmailError(false)}
-                    disabled={isLoading}
+                    disabled={isSignInLoading}
                   />
                 </div>
 
@@ -935,7 +783,7 @@ export default function App() {
                     placeholder="Password"
                     required
                     onFocus={() => setPasswordError(false)}
-                    disabled={isLoading}
+                    disabled={isSignInLoading}
                   />
                 </div>
 
@@ -971,13 +819,13 @@ export default function App() {
                   <button
                     type="submit"
                     className={`w-full flex justify-center py-3 px-4 rounded-lg shadow-sm text-sm font-bold text-gray-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-gray-900 ${
-                      isLoading
+                      isSignInLoading
                         ? 'bg-gray-600 cursor-not-allowed'
                         : 'animated-button text-gray-900 hover:text-gray-900'
                     }`}
-                    disabled={isLoading}
+                    disabled={isSignInLoading}
                   >
-                    {isLoading ? <div className="button-spinner"></div> : (showRegisterForm ? 'Register Account' : 'Sign In')}
+                    {isSignInLoading ? <div className="button-spinner"></div> : (showRegisterForm ? 'Register Account' : 'Sign In')}
                   </button>
                 </div>
               </form>
