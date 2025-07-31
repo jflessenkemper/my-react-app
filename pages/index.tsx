@@ -1,62 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
-
-// Define a type for your Excel data row for better type safety
-interface ParsedExcelData {
-  frequency_interval: string[];
-  income_source_1: string;
-  income_source_1_values: number[];
-  income_source_2: string;
-  income_source_2_values: number[];
-  income_total_label: string;
-  income_totals: number[];
-  expense_categories: string[];
-  expense_values: number[][]; // Assuming this is an array of arrays for rows x columns
-  expense_total_label: string;
-  expense_totals: number[];
-  profit_loss_section_label: string;
-  profit_loss_label: string;
-  profit_loss_values: number[];
-}
+import { useState } from 'react';
 
 export default function Home() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loggedInUserEmail, setLoggedInUserEmail] = useState<string | null>(null);
-  const [showRegisterForm, setShowRegisterForm] = useState(false);
-  const [isSignInLoading, setIsSignInLoading] = useState(false);
-  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
-  const [isBankBoxSelected, setIsBankBoxSelected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [basiqUserId, setBasiqUserId] = useState<string | null>(null);
-  const [bankData, setBankData] = useState<any>(null);
+  const [bankData, setBankData] = useState<unknown>(null);
   const [isLoadingBankData, setIsLoadingBankData] = useState(false);
-  const [emailError, setEmailError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
-
-  // New states for password reset functionality
-  const [showPasswordResetRequestForm, setShowPasswordResetRequestForm] = useState(false);
-  const [showPasswordResetForm, setShowPasswordResetForm] = useState(false);
-  const [resetCode, setResetCode] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-
-  const [activeTab, setActiveTab] = useState<'excel' | 'excel'>('excel');
-
-  // States for Excel upload functionality
-  const [excelFile, setExcelFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState('');
-  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
-  const [excelData, setExcelData] = useState<ParsedExcelData | null>(null);
-
-  const logoutTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [selectedSource, setSelectedSource] = useState<string | null>(null);
-  const [showExcelUploadInterface, setShowExcelUploadInterface] = useState(false);
 
   // Complete Basiq integration flow
   const startBasiqFlow = async () => {

@@ -2,7 +2,6 @@
   "name": "my-react-app",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,6 +14,7 @@
     "@tailwindcss/vite": "^4.1.10",
     "bcryptjs": "^2.4.3",
     "next": "^15.4.5",
+    "nodemailer": "^7.0.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "uuid": "^9.0.0",
