@@ -1,21 +1,20 @@
 {
-  "/_error": "pages/_error.js",
   "/_app": "pages/_app.js",
   "/api/basiq-auth": "pages/api/basiq-auth.js",
-  "/api/basiq-connect": "pages/api/basiq-connect.js",
-  "/api/basiq-consent-url": "pages/api/basiq-consent-url.js",
-  "/api/basiq-create-user": "pages/api/basiq-create-user.js",
+  "/_error": "pages/_error.js",
   "/api/basiq-job-status": "pages/api/basiq-job-status.js",
+  "/api/basiq-connect": "pages/api/basiq-connect.js",
   "/api/basiq-transactions": "pages/api/basiq-transactions.js",
+  "/api/basiq-consent-url": "pages/api/basiq-consent-url.js",
   "/api/get-data": "pages/api/get-data.js",
   "/api/get-excel-data": "pages/api/get-excel-data.js",
+  "/api/basiq-create-user": "pages/api/basiq-create-user.js",
   "/api/register": "pages/api/register.js",
   "/api/login": "pages/api/login.js",
   "/api/logout": "pages/api/logout.js",
   "/api/request-password-reset": "pages/api/request-password-reset.js",
   "/api/reset-password": "pages/api/reset-password.js",
   "/api/upload-excel": "pages/api/upload-excel.js",
-  "/": "pages/index.html",
-  "/_document": "pages/_document.js",
-  "/404": "pages/404.html"
+  "/": "pages/index.js",
+  "/_document": "pages/_document.js"
 }
